@@ -4,7 +4,7 @@ import { actions, useStore } from '../store'
 import type { TapResult } from '../store'
 import type { Pending } from '../components/ConfirmSheet'
 import { ConfirmSheet } from '../components/ConfirmSheet'
-import { Hero } from '../components/Hero'
+import { 清單角色圖 } from '../內容'
 import { CheckIcon, DiceIcon, PencilIcon, PlusIcon, Sparkle, StepIcon, TrashIcon } from '../Icons'
 
 /** 清單底部小人說的話，依進度改變 */
@@ -88,7 +88,7 @@ export function TaskList({
       </div>
       {me && (
         <div className="list-foot">
-          <Hero identity={me} className="foot-hero" />
+          <img className="foot-hero" src={清單角色圖} alt="" />
           <p className="foot-say">{footLine(category, done, tasks.length)}</p>
         </div>
       )}

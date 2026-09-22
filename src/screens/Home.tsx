@@ -21,12 +21,15 @@ export function Home({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () 
   const [imgId, setImgId] = useState<string | null>(() => pick(images) ?? null)
   const [note, setNote] = useState<string | null>(() => pick(notes) ?? null)
   const [spin, setSpin] = useState(0)
+  // 寄語預設不顯示，要點角色才會說話
+  const [sayOpen, setSayOpen] = useState(false)
   const [stagesOpen, setStagesOpen] = useState(false)
   const url = useImageUrl(imgId)
 
   const reroll = () => {
     setImgId(pick(images) ?? null)
     setNote(pick(notes) ?? null)
+    setSayOpen(true)
     setSpin((n) => n + 1)
     sfx.tap()
   }
@@ -40,34 +43,39 @@ export function Home({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () 
           </div>
         )}
 
-        <button className="valko" onClick={reroll} aria-label="換一張圖">
+        <button className="valko" onClick={reroll} aria-label="點一下和牠說話">
           <span key={spin} className="valko-img pop-in">
             {url ? <img src={url} alt="" /> : <DefaultHero />}
           </span>
         </button>
 
-        {note && (
-          <button key={note + spin} className="bubble say pop-in" onClick={reroll}>
+        {note && sayOpen && (
+          <button
+            key={note + spin}
+            className="bubble say pop-in"
+            onClick={() => setSayOpen(false)}
+            aria-label="收起對話"
+          >
             {note}
           </button>
         )}
-      </div>
 
-      <button
-        className="identity-info"
-        onClick={() => {
-          sfx.tap()
-          setStagesOpen(true)
-        }}
-      >
-        <span className="class-name">{displayName(me)}</span>
-        <span className="level mono">
-          lv.{info.level} <span className="level-exp">({me.exp} EXP)</span>
-        </span>
-        <span className="info-hint mono">
-          {upcoming ? `進化之路 · 下一階 lv.${upcoming.fromLevel}` : '進化之路'} ›
-        </span>
-      </button>
+        <button
+          className="identity-info"
+          onClick={() => {
+            sfx.tap()
+            setStagesOpen(true)
+          }}
+        >
+          <span className="class-name">{displayName(me)}</span>
+          <span className="level mono">
+            lv.{info.level} <span className="level-exp">({me.exp} EXP)</span>
+          </span>
+          <span className="info-hint mono">
+            {upcoming ? `進化之路 · 下一階 lv.${upcoming.fromLevel}` : '進化之路'} ›
+          </span>
+        </button>
+      </div>
 
       <div className="bar" role="progressbar" aria-valuenow={me.exp} aria-valuemin={info.start} aria-valuemax={info.next}>
         <div className="bar-fill" style={{ width: `${Math.max(2, Math.round(info.ratio * 100))}%` }} />
