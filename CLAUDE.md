@@ -48,6 +48,9 @@ src/
 **資料版本**：`store.ts` 的 `VERSION` 常數是唯一來源，不要在別處寫死數字。
 改資料結構就把 `VERSION` 加一，並在 `normalize()` 補上升級路徑。
 載入時若發現儲存的版本較舊會立刻寫回，避免每次開啟都重跑升級。
+`normalize()` 只擋沒有版本的資料，**比程式碼新的版本要照讀**，不要改回 `v <= VERSION`：
+Service Worker 會讓使用者先開到新版再被餵回舊版，擋掉就等於把他的資料洗掉。
+同理，有資料卻解不開時要先備份到 `KEY_BROKEN` 再開新的。
 
 **統計不從紀錄回推**：`logs` 只保留最新 2000 筆會被截斷。
 長期成就一律讀 `state.stats` 裡的獨立累計欄位（`taskCounts`、`dayCounts`、`goalDays` 等）。
