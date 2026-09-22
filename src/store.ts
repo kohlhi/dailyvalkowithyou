@@ -5,6 +5,8 @@ import { DEFAULT_STAGE_LEVELS, allImageIds, makeStage, sortStages, stageIndex } 
 import { emptyStats, newlyUnlocked } from './achievements'
 import { APP } from './appConfig'
 import { blobToDataUrl, builtinId, dataUrlToBlob, listImages, putImage } from './images'
+import { 預設任務, 預設事件, 預設身份 } from './內容'
+import type { 分類, 身份內容 } from './內容'
 
 const KEY = 'daily-quest-v1'
 /** 讀不開的資料會原封不動搬到這裡，不直接丟掉，之後才有機會救回來 */
@@ -31,53 +33,42 @@ const DEFAULT_PREFS: Prefs = {
 /** 距離上次打招呼超過這個時間才會再出現，避免切換 App 就跳一次 */
 const GREET_COOLDOWN = 4 * 60 * 60 * 1000
 
+/** 內容檔寫中文，這裡轉回程式用的英文代號 */
+const 分類對照: Record<分類, Category> = { 每日: 'daily', 每週: 'weekly', 成就: 'achievement' }
+
 function starterTasks(now: number): Task[] {
-  const mk = (title: string, category: Category, exp: number, target = 1, steps: string[] = []): Task => ({
-    id: uid(),
-    title,
-    category,
-    exp,
-    identityId: null,
-    skillId: null,
-    target,
-    progress: 0,
-    steps,
-    stepsDone: steps.map(() => false),
-    periodKey: periodKeyFor(category),
-    doneAt: null,
-    createdAt: now,
-    eventDay: null,
+  return 預設任務.map((t) => {
+    const category = 分類對照[t.分類]
+    const steps = t.步驟 ?? []
+    return {
+      id: uid(),
+      title: t.名稱,
+      category,
+      exp: t.EXP,
+      identityId: null,
+      skillId: null,
+      target: t.次數 ?? 1,
+      progress: 0,
+      steps,
+      stepsDone: steps.map(() => false),
+      periodKey: periodKeyFor(category),
+      doneAt: null,
+      createdAt: now,
+      eventDay: null,
+    }
   })
-  return [
-    mk('喝 2500ml 的水', 'daily', 100),
-    mk('畫圖 1HR', 'daily', 300),
-    mk('看書 1HR', 'daily', 300),
-    mk('運動 3 次', 'weekly', 800, 3),
-    mk('整理房間', 'weekly', 300, 1, ['桌面', '地板', '倒垃圾']),
-    mk('完成第一個自訂任務', 'achievement', 500),
-  ]
 }
 
 function starterEvents(): RandomEvent[] {
-  const mk = (title: string, exp: number, rare = false): RandomEvent => ({
+  return 預設事件.map((e) => ({
     id: uid(),
-    title,
-    exp,
-    rare,
+    title: e.名稱,
+    exp: e.EXP,
+    rare: Boolean(e.稀有),
     identityId: null,
-  })
-  return [
-    mk('額外畫一張速寫', 300),
-    mk('出門散步 15 分鐘', 300),
-    mk('讀 10 頁書', 300),
-    mk('整理一個抽屜', 100),
-    mk('寫下三件感謝的事', 100),
-    mk('做 20 下伏地挺身', 300),
-    mk('跟一位久沒聯絡的朋友說話', 300),
-    mk('完成一件拖延超過一週的事', 2000, true),
-    mk('學一個全新的東西 30 分鐘', 800, true),
-  ]
+  }))
 }
+
 
 /** 已經達到的階段直接標記為看過，之後才不會補播進化動畫 */
 function markReached(identity: Identity): Identity {
@@ -85,47 +76,22 @@ function markReached(identity: Identity): Identity {
   return { ...identity, evolvedIds: identity.stages.slice(0, idx + 1).map((s) => s.id) }
 }
 
-/** 預設身份的內容，四階的稱號照企劃表 */
-const PRESET_IDENTITIES: { stages: string[]; skills: string[]; scene: string; art: string; notes: string[] }[] = [
-  {
-    stages: ['假裝在讀書的狼', '筆記成山的狼', '高麗菜那桌的狼', '學霸 HOT NERD 的狼'],
-    skills: ['專注', '記憶'],
-    scene: '/scenes/study-night.webp',
-    art: '/heroes/valko-study-1.webp',
-    notes: ['今天也要努力讀書！！', '看不懂沒關係，看完再說'],
-  },
-  {
-    stages: ['抖著拿啞鈴的狼', '汗如雨下的狼', '好像有點太大隻的狼', '健身巨學的狼'],
-    skills: ['體力', '意志'],
-    scene: '',
-    art: '/heroes/valko-cheer.webp',
-    notes: ['先做一下就好，真的', '今天不練，明天更難練'],
-  },
-  {
-    stages: ['勉強起床的狼', '記得吃飯的狼', '自律沒被吃掉的狼', '自律狂人的狼'],
-    skills: ['生活', '心情'],
-    scene: '',
-    art: '/heroes/valko-cheer.webp',
-    notes: ['先把自己餵飽', '今天有起床就已經贏了'],
-  },
-]
-
-function makeIdentity(preset: (typeof PRESET_IDENTITIES)[number]): Identity {
-  const stages = DEFAULT_STAGE_LEVELS.map((lv, i) => makeStage(preset.stages[i] ?? `第 ${i + 1} 階`, lv))
-  stages[0].notes = preset.notes
-  stages[0].scene = preset.scene
-  if (preset.art) stages[0].images = [builtinId(preset.art)]
+function makeIdentity(preset: 身份內容): Identity {
+  const stages = DEFAULT_STAGE_LEVELS.map((lv, i) => makeStage(preset.階段名[i] ?? `第 ${i + 1} 階`, lv))
+  stages[0].notes = preset.寄語
+  stages[0].scene = preset.場景
+  if (preset.圖) stages[0].images = [builtinId(preset.圖)]
   return {
     id: uid(),
     exp: 0,
-    skills: preset.skills.map((name) => ({ id: uid(), name, exp: 0 })),
+    skills: preset.技能.map((name) => ({ id: uid(), name, exp: 0 })),
     stages,
     evolvedIds: [stages[0].id],
   }
 }
 
 function defaultState(): State {
-  const identities = PRESET_IDENTITIES.map(makeIdentity)
+  const identities = 預設身份.map(makeIdentity)
   return {
     version: VERSION,
     name: APP.defaultUserName,

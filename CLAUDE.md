@@ -33,8 +33,9 @@ PWA 有 Service Worker，部署後手機上要開**兩次**才會換到新版，
 src/
   App.tsx          畫面切換、彈窗佇列
   appConfig.ts     App 名稱設定（vite.config 也會讀）
+  內容.ts          預設任務／事件／身份與 33 個徽章，純資料，給使用者自己改
   store.ts         全部狀態與操作，含版本升級
-  achievements.ts  33 個成就的定義與判定
+  achievements.ts  讀內容.ts 組出成就，這裡只放判定算法
   stage.ts         進化階段的查詢與繼承
   level.ts         等級公式、日/週期間 key、連續天數、固定亂數
   images.ts        IndexedDB 圖片 + 內建圖包
@@ -44,6 +45,11 @@ src/
 ```
 
 ## 這些決定有原因，改之前先讀
+
+**可改的文案集中在 `src/內容.ts`**：預設任務、預設事件、預設身份、33 個徽章都在那裡，
+純資料沒有邏輯，使用者會自己在 GitHub 上編輯。新增這類內容一律往那個檔案加，不要寫死在畫面或 store 裡。
+徽章的達成條件從 `內容.ts` 的 `條件` 型別挑名字，算法寫在 `achievements.ts` 的 `量表`；
+要新條件就兩邊各加一筆。**徽章 id 是使用者解鎖紀錄的對應鍵，永遠不要改既有的 id。**
 
 **資料版本**：`store.ts` 的 `VERSION` 常數是唯一來源，不要在別處寫死數字。
 改資料結構就把 `VERSION` 加一，並在 `normalize()` 補上升級路徑。
