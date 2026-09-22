@@ -1,0 +1,4 @@
+# 統一換行字元，之後換到 Mac 也不會整個檔案變成差異
+* text=auto eol=lf
+*.png binary
+*.svg text eol=lf
