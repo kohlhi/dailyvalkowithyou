@@ -5,7 +5,7 @@ import type { TapResult } from '../store'
 import type { Pending } from '../components/ConfirmSheet'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { Hero } from '../components/Hero'
-import { CheckIcon, DiceIcon, PlusIcon, Sparkle, StepIcon } from '../Icons'
+import { CheckIcon, DiceIcon, PencilIcon, PlusIcon, Sparkle, StepIcon, TrashIcon } from '../Icons'
 
 /** 清單底部小人說的話，依進度改變 */
 function footLine(category: Category, done: number, total: number): string {
@@ -31,10 +31,12 @@ const HINT: Record<Category, string> = {
 export function TaskList({
   category,
   onAdd,
+  onEdit,
   onResult,
 }: {
   category: Category
   onAdd: () => void
+  onEdit: (t: Task) => void
   onResult: (r: TapResult) => void
 }) {
   const s = useStore()
@@ -76,6 +78,7 @@ export function TaskList({
             animate={s.prefs.animation}
             onTap={() => request({ kind: 'task', task: t })}
             onStep={(i) => request({ kind: 'step', task: t, index: i })}
+            onEdit={() => onEdit(t)}
           />
         ))}
         <button className="task-card add" onClick={onAdd}>
@@ -118,6 +121,7 @@ function TaskCard({
   animate,
   onTap,
   onStep,
+  onEdit,
 }: {
   task: Task
   skill: string | null
@@ -125,6 +129,7 @@ function TaskCard({
   animate: boolean
   onTap: () => void
   onStep: (i: number) => void
+  onEdit: () => void
 }) {
   const done = !!task.doneAt
   const hasSteps = task.steps.length > 0
@@ -174,9 +179,35 @@ function TaskCard({
         </div>
         {done ? (
           <CheckIcon size={40} className="check" />
-        ) : counting && task.progress > 0 ? (
-          <span className="count mono">{task.progress}</span>
-        ) : null}
+        ) : (
+          <span className="task-tools">
+            {counting && task.progress > 0 && <span className="count mono">{task.progress}</span>}
+            {!isEvent && (
+              <>
+                <button
+                  className="task-tool"
+                  aria-label="編輯"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onEdit()
+                  }}
+                >
+                  <PencilIcon size={17} />
+                </button>
+                <button
+                  className="task-tool"
+                  aria-label="刪除"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (confirm(`刪除「${task.title}」？`)) actions.deleteTask(task.id)
+                  }}
+                >
+                  <TrashIcon size={17} />
+                </button>
+              </>
+            )}
+          </span>
+        )}
       </div>
 
       {hasSteps && (

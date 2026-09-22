@@ -111,33 +111,33 @@ export const Sparkle = ({ size = 18, className }: P) => (
 /** 預設小人：可在「使用者偏好」換成自己的圖 */
 export const DefaultHero = () => (
   <svg viewBox="0 0 220 240" className="hero-svg" aria-hidden="true">
-    <g fill="none" stroke="#111" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+    <g fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
       {/* 劍（畫在身體後面） */}
       <path d="M147 152l22-22" />
       <path d="M152 163 84 231" strokeWidth="4" />
-      <path d="M155 152 165 162 92 236 84 228 Z" fill="#fff" strokeWidth="3" />
+      <path d="M155 152 165 162 92 236 84 228 Z" fill="var(--paper)" strokeWidth="3" />
       <path d="M144 148l24 22" strokeWidth="5" />
-      <circle cx="176" cy="130" r="6" fill="#111" />
+      <circle cx="176" cy="130" r="6" fill="currentColor" />
       {/* 頭盔 */}
-      <path d="M78 62c0-24 12-38 34-38s34 14 34 38v18H78V62Z" fill="#fff" />
+      <path d="M78 62c0-24 12-38 34-38s34 14 34 38v18H78V62Z" fill="var(--paper)" />
       <path d="M96 20l6 8M112 14v10M128 20l-6 8" />
-      <rect x="86" y="48" width="52" height="9" rx="4" fill="#111" stroke="none" />
-      <path d="M86 80h52v16c0 6-4 10-10 10h-32c-6 0-10-4-10-10V80Z" fill="#fff" />
+      <rect x="86" y="48" width="52" height="9" rx="4" fill="currentColor" stroke="none" />
+      <path d="M86 80h52v16c0 6-4 10-10 10h-32c-6 0-10-4-10-10V80Z" fill="var(--paper)" />
       <path d="M100 96h24" />
       {/* 身體 */}
-      <path d="M70 108c10-8 74-8 84 0l6 44c-8 8-88 8-96 0l6-44Z" fill="#111" />
+      <path d="M70 108c10-8 74-8 84 0l6 44c-8 8-88 8-96 0l6-44Z" fill="currentColor" />
       {/* 右手握劍 */}
       <path d="M150 114c10 6 16 16 16 28" />
-      <circle cx="160" cy="150" r="9" fill="#fff" />
+      <circle cx="160" cy="150" r="9" fill="var(--paper)" />
       {/* 盾 */}
-      <path d="M52 110l40 8v34c-8 22-24 30-40 34-16-4-32-12-40-34v-34l40-8Z" fill="#fff" />
+      <path d="M52 110l40 8v34c-8 22-24 30-40 34-16-4-32-12-40-34v-34l40-8Z" fill="var(--paper)" />
       <path d="M52 124v52M32 146h40" />
       {/* 腿 */}
-      <path d="M88 156v40c0 4-2 8-6 10h20c-2-2-2-6-2-10v-38" fill="#fff" />
-      <path d="M120 158v38c0 4 0 8 2 10h20c-4-2-6-6-6-10v-40" fill="#fff" />
+      <path d="M88 156v40c0 4-2 8-6 10h20c-2-2-2-6-2-10v-38" fill="var(--paper)" />
+      <path d="M120 158v38c0 4 0 8 2 10h20c-4-2-6-6-6-10v-40" fill="var(--paper)" />
       <path d="M76 206h32M128 206h32" strokeWidth="4" />
     </g>
-    <g fill="#111">
+    <g fill="currentColor">
       <path d="M40 40c1.5-6 3-7.5 9-9-6-1.5-7.5-3-9-9-1.5 6-3 7.5-9 9 6 1.5 7.5 3 9 9Z" />
       <path d="M62 62c1-4 2-5 6-6-4-1-5-2-6-6-1 4-2 5-6 6 4 1 5 2 6 6Z" />
       <path d="M192 196c2-8 4-10 12-12-8-2-10-4-12-12-2 8-4 10-12 12 8 2 10 4 12 12Z" />

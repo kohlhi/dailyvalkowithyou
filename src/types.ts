@@ -20,6 +20,8 @@ export interface Stage {
   images: string[]
   rewards: string[]
   notes: string[]
+  /** 首頁背景場景的圖片路徑，空字串代表沿用前一階 */
+  scene: string
 }
 
 /** 身份（繪師、健身…），各自累積 exp 與等級 */
@@ -128,7 +130,7 @@ export interface Unlocked {
 }
 
 export interface State {
-  version: 6
+  version: 7
   name: string
   identities: Identity[]
   currentIdentityId: string

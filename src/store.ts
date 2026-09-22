@@ -4,11 +4,11 @@ import { dayKey, levelFromExp, periodKeyFor, seeded, uid } from './level'
 import { DEFAULT_STAGE_LEVELS, allImageIds, makeStage, sortStages, stageIndex } from './stage'
 import { emptyStats, newlyUnlocked } from './achievements'
 import { APP } from './appConfig'
-import { blobToDataUrl, dataUrlToBlob, listImages, putImage } from './images'
+import { blobToDataUrl, builtinId, dataUrlToBlob, listImages, putImage } from './images'
 
 const KEY = 'daily-quest-v1'
 /** 目前的資料格式版本，只在這裡改一次 */
-const VERSION = 6
+const VERSION = 7
 
 /** 每天遇到事件的機率 */
 const EVENT_CHANCE = 0.7
@@ -83,29 +83,52 @@ function markReached(identity: Identity): Identity {
   return { ...identity, evolvedIds: identity.stages.slice(0, idx + 1).map((s) => s.id) }
 }
 
-function defaultIdentity(): Identity {
-  const names = ['Paladin', 'Sir. Paladin', 'Lord Paladin', 'Grand Paladin']
-  const stages = DEFAULT_STAGE_LEVELS.map((lv, i) => makeStage(names[i] ?? `Paladin ${i + 1}`, lv))
-  stages[0].notes = ['今天也去打倒一隻小怪', '每天進步 1%，一年後就是 37 倍']
+/** 預設身份的內容，四階的稱號照企劃表 */
+const PRESET_IDENTITIES: { stages: string[]; skills: string[]; scene: string; art: string; notes: string[] }[] = [
+  {
+    stages: ['假裝在讀書的狼', '筆記成山的狼', '高麗菜那桌的狼', '學霸 HOT NERD 的狼'],
+    skills: ['專注', '記憶'],
+    scene: '/scenes/study-night.webp',
+    art: '/heroes/valko-study-1.webp',
+    notes: ['今天也要努力讀書！！', '看不懂沒關係，看完再說'],
+  },
+  {
+    stages: ['抖著拿啞鈴的狼', '汗如雨下的狼', '好像有點太大隻的狼', '健身巨學的狼'],
+    skills: ['體力', '意志'],
+    scene: '',
+    art: '/heroes/valko-cheer.webp',
+    notes: ['先做一下就好，真的', '今天不練，明天更難練'],
+  },
+  {
+    stages: ['勉強起床的狼', '記得吃飯的狼', '自律沒被吃掉的狼', '自律狂人的狼'],
+    skills: ['生活', '心情'],
+    scene: '',
+    art: '/heroes/valko-cheer.webp',
+    notes: ['先把自己餵飽', '今天有起床就已經贏了'],
+  },
+]
+
+function makeIdentity(preset: (typeof PRESET_IDENTITIES)[number]): Identity {
+  const stages = DEFAULT_STAGE_LEVELS.map((lv, i) => makeStage(preset.stages[i] ?? `第 ${i + 1} 階`, lv))
+  stages[0].notes = preset.notes
+  stages[0].scene = preset.scene
+  if (preset.art) stages[0].images = [builtinId(preset.art)]
   return {
     id: uid(),
     exp: 0,
-    skills: [
-      { id: uid(), name: '體力', exp: 0 },
-      { id: uid(), name: '專注', exp: 0 },
-    ],
+    skills: preset.skills.map((name) => ({ id: uid(), name, exp: 0 })),
     stages,
     evolvedIds: [stages[0].id],
   }
 }
 
 function defaultState(): State {
-  const me = defaultIdentity()
+  const identities = PRESET_IDENTITIES.map(makeIdentity)
   return {
     version: VERSION,
     name: APP.defaultUserName,
-    identities: [me],
-    currentIdentityId: me.id,
+    identities,
+    currentIdentityId: identities[0].id,
     tasks: starterTasks(Date.now()),
     logs: [],
     prefs: { ...DEFAULT_PREFS },
@@ -158,6 +181,7 @@ function upgradeIdentity(raw: Partial<Identity> & Record<string, unknown>): Iden
       images: Array.isArray(s.images) ? s.images : [],
       rewards: Array.isArray(s.rewards) ? s.rewards : [],
       notes: Array.isArray(s.notes) ? s.notes : [],
+      scene: typeof s.scene === 'string' ? s.scene : '',
     }))
   } else {
     const name = String(raw.name ?? '冒險者')

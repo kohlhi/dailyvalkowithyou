@@ -1,11 +1,24 @@
 :root {
-  --paper: #f6f3ee;
-  --ink: #111111;
-  --muted: #6b6b6b;
-  --card: #ffffff;
+  /* 深色主題，色票取自場景插畫 */
+  --paper: #1e2a37;
+  --paper-2: #26344400;
+  --ink: #f3eee4;
+  --muted: #93a6b9;
+  --line: #44586d;
+  --card: #26343f;
+  /* 浮出的白色面板（進化之路、統計卡） */
+  --sheet: #f7f2e8;
+  --on-sheet: #1e2a37;
+  --accent: #f0a44e;
+  --danger: #e2705f;
   --font: 'Space Grotesk', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
   --mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  color-scheme: light;
+  color-scheme: dark;
+}
+
+body {
+  background: linear-gradient(175deg, #23303e 0%, #1b2632 60%, #1a232e 100%);
+  background-attachment: fixed;
 }
 
 * {
@@ -355,7 +368,8 @@ input {
 }
 
 .task-card.add {
-  border-style: dashed;
+  border-style: solid;
+  border-color: var(--line);
   background: transparent;
   justify-content: center;
   gap: 8px;
@@ -501,9 +515,10 @@ input {
 }
 
 .ghost.danger {
-  border-style: dashed;
-  color: #b00020;
-  border-color: #b00020;
+  border-style: solid;
+  border-color: var(--line);
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 .form .pill {
@@ -560,7 +575,7 @@ input {
 }
 
 .text-input:focus {
-  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.12);
+  box-shadow: 0 0 0 3px rgba(243, 238, 228, 0.16);
 }
 
 .avatar-row {
@@ -685,7 +700,7 @@ input {
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(17, 17, 17, 0.45);
+  background: rgba(10, 16, 22, 0.62);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -951,7 +966,7 @@ button.hero:active:not(:disabled) {
   list-style: none;
   margin: 10px 0 0;
   padding: 8px 0 0;
-  border-top: 2px dashed var(--ink);
+  border-top: 2px solid var(--line);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1274,7 +1289,8 @@ button.hero:active:not(:disabled) {
 }
 
 .thumb.add {
-  border-style: dashed;
+  border-style: solid;
+  border-color: var(--line);
   flex-direction: column;
   gap: 4px;
   font-size: 12px;
@@ -1433,7 +1449,7 @@ button.hero:active:not(:disabled) {
 }
 
 .event-card {
-  border: 2.5px dashed var(--ink);
+  border: 2.5px solid var(--line);
   border-radius: 18px 16px 20px 15px / 15px 20px 16px 18px;
   padding: 16px 18px;
   display: flex;
@@ -1459,7 +1475,7 @@ button.hero:active:not(:disabled) {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border: 2.5px dashed var(--ink);
+  border: 2.5px solid var(--line);
   border-radius: 999px;
   padding: 9px 16px;
   font-size: 14px;
@@ -1478,7 +1494,8 @@ button.hero:active:not(:disabled) {
 }
 
 .task-card.event-task {
-  border-style: dashed;
+  border-style: solid;
+  border-color: var(--line);
 }
 
 .event-mark {
@@ -1539,7 +1556,7 @@ button.manage-main {
 
 .reward-fallback {
   text-align: center;
-  border: 2.5px dashed var(--ink);
+  border: 2.5px solid var(--line);
   border-radius: 20px;
   padding: 26px 22px;
   background: var(--card);
@@ -1905,7 +1922,7 @@ button.manage-main {
 .stage-locked {
   width: 76%;
   height: 76%;
-  border: 3px dashed var(--ink);
+  border: 3px solid var(--line);
   border-radius: 26px;
   display: flex;
   align-items: center;
@@ -1957,7 +1974,8 @@ button.manage-main {
 }
 
 .stage-dot.locked {
-  border-style: dashed;
+  border-style: solid;
+  border-color: var(--line);
   opacity: 0.45;
 }
 
@@ -1969,13 +1987,14 @@ button.manage-main {
 }
 
 .locked-bubble {
-  border-style: dashed;
+  border-style: solid;
+  border-color: var(--line);
   color: var(--muted);
 }
 
 .locked-bubble::after {
-  border-right-style: dashed;
-  border-bottom-style: dashed;
+  border-right-style: solid;
+  border-bottom-style: solid;
 }
 
 /* ---------- 身份編輯的階段切換 ---------- */
@@ -2019,7 +2038,8 @@ button.manage-main {
 }
 
 .stage-tab.locked {
-  border-style: dashed;
+  border-style: solid;
+  border-color: var(--line);
 }
 
 .stage-tab.on {
@@ -2163,12 +2183,13 @@ button.manage-main {
 
 .badge-ring.outer {
   inset: -7px;
-  border: 2px dashed var(--ink);
+  border: 2px solid var(--line);
   opacity: 0.6;
 }
 
 .badge.locked {
-  border-style: dashed;
+  border-style: solid;
+  border-color: var(--line);
   background: transparent;
   color: var(--ink);
   opacity: 0.4;
@@ -2218,7 +2239,8 @@ button.manage-main {
 }
 
 .badge-list li:not(.got) {
-  border-style: dashed;
+  border-style: solid;
+  border-color: var(--line);
 }
 
 .badge-info {
@@ -2530,4 +2552,432 @@ button.manage-main {
 
 .thumb.add span {
   line-height: 1.2;
+}
+
+/* ==========================================================
+   Valko 主視覺：深色底、場景 + 角色、白色浮出面板
+   ========================================================== */
+
+/* ---------- 標題列 ---------- */
+.header-title .name {
+  font-size: 19px;
+  letter-spacing: 0.16em;
+}
+
+.header-title .sub {
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.icon-btn {
+  background: var(--card);
+  border-color: var(--line);
+}
+
+/* ---------- 首頁：場景與角色 ---------- */
+.stage-view {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1 / 1.04;
+  margin: 0 auto 2px;
+}
+
+.stage-view.no-scene {
+  aspect-ratio: 1 / 0.9;
+}
+
+.scene {
+  position: absolute;
+  left: 1%;
+  right: 1%;
+  top: 4%;
+  aspect-ratio: 4 / 3.9;
+  border-radius: 22px 17px 24px 16px / 16px 24px 17px 22px;
+  overflow: hidden;
+  border: 2.5px solid var(--line);
+  background: #16202b;
+}
+
+.scene img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
+}
+
+.valko {
+  position: absolute;
+  right: -1%;
+  bottom: 0;
+  width: 50%;
+  padding: 0;
+  background: none;
+  z-index: 2;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+}
+
+.stage-view.no-scene .valko {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+}
+
+.stage-view.no-scene .valko:active:not(:disabled) {
+  transform: translateX(-50%) scale(0.97);
+}
+
+.valko-img,
+.valko-img img,
+.valko-img .hero-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- 對話泡泡：角色在說話，一律白底深字 ---------- */
+.bubble,
+.confirm-say,
+.foot-say {
+  background: var(--sheet);
+  color: var(--on-sheet);
+  border-color: var(--on-sheet);
+}
+
+.bubble::after,
+.confirm-say::after,
+.foot-say::after {
+  background: var(--sheet);
+  border-color: var(--on-sheet);
+}
+
+.stage-view .bubble.say {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  max-width: 62%;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 9px 13px;
+}
+
+.stage-view .bubble.say::after {
+  left: auto;
+  right: 20px;
+}
+
+/* ---------- 稱號與等級 ---------- */
+.identity-info {
+  gap: 1px;
+  padding: 4px 18px 8px;
+}
+
+.identity-info .class-name {
+  font-size: 25px;
+  line-height: 1.25;
+}
+
+.identity-info .level {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.level-exp {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.info-hint {
+  border-bottom-color: var(--line);
+}
+
+/* ---------- 進度條 ---------- */
+.bar {
+  height: 14px;
+  border-color: var(--line);
+  background: var(--card);
+  margin-top: 14px;
+}
+
+.bar-fill {
+  background: var(--accent);
+}
+
+.bar-labels {
+  color: var(--muted);
+}
+
+/* ---------- 底部分頁 ---------- */
+.tab {
+  background: var(--card);
+  border-color: var(--line);
+}
+
+.tab.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* ---------- 任務卡 ---------- */
+.task-card {
+  border-color: var(--line);
+}
+
+.task-card.done {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.task-card.add {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.count {
+  border-color: var(--line);
+}
+
+/* 每一列右側的編輯與刪除 */
+.task-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.task-tool {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  border: 2px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  background: transparent;
+}
+
+.task-card.done .task-tool {
+  border-color: var(--paper);
+  color: var(--paper);
+  opacity: 0.6;
+}
+
+/* ---------- 白色浮出面板 ---------- */
+.modal.stage-sheet,
+.modal.pack-modal {
+  background: var(--sheet);
+  color: var(--on-sheet);
+  border-color: var(--on-sheet);
+}
+
+.stage-sheet .block-title,
+.pack-modal .block-title {
+  color: var(--on-sheet);
+}
+
+.stage-sheet .icon-btn,
+.pack-modal .icon-btn {
+  background: transparent;
+  border-color: var(--on-sheet);
+  color: var(--on-sheet);
+}
+
+.stage-sheet .stage-tag,
+.stage-sheet .help,
+.stage-sheet .small {
+  color: #6b7a8a;
+}
+
+.stage-sheet .stage-need {
+  border-color: var(--on-sheet);
+}
+
+.stage-sheet .stage-dot {
+  border-color: var(--on-sheet);
+}
+
+.stage-sheet .stage-dot.on {
+  background: var(--on-sheet);
+}
+
+.stage-sheet .chip {
+  border-color: var(--on-sheet);
+  background: transparent;
+}
+
+.stage-sheet .pill {
+  background: var(--on-sheet);
+  color: var(--sheet);
+}
+
+.stage-locked {
+  border-color: #9aa8b6;
+}
+
+/* 進化之路裡的技能列 */
+.sheet-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* ---------- 統計卡改成白面板 ---------- */
+.stat {
+  background: var(--sheet);
+  color: var(--on-sheet);
+  border-color: var(--on-sheet);
+}
+
+.stat .small {
+  color: #6b7a8a;
+}
+
+.badge-shelf,
+.badge-summary {
+  background: var(--card);
+  border-color: var(--line);
+}
+
+/* ---------- 其餘表面 ---------- */
+.modal,
+.sheet,
+.text-input,
+.ghost,
+.toggle,
+.line-list li,
+.manage-list li,
+.thumb,
+.event-card,
+.seg-btn,
+.pick,
+.mini,
+.badge,
+.badge-list li,
+.tut-card,
+.tut-circle,
+.tut-pill,
+.tut-chip {
+  border-color: var(--line);
+}
+
+.text-input,
+.ghost,
+.toggle,
+.line-list li,
+.manage-list li,
+.thumb,
+.seg-btn,
+.pick {
+  background: var(--card);
+}
+
+.seg-btn.on,
+.pick.on,
+.line-list li.current,
+.tut-circle.on,
+.tut-pill.on {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.toggle .knob {
+  border-color: var(--line);
+}
+
+.toggle.on .knob {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.toggle.on .knob::after {
+  background: var(--paper);
+}
+
+.block {
+  border-top-color: var(--line);
+}
+
+.title-input {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.row {
+  border-top-color: var(--line);
+}
+
+.custom-exp input,
+.badge-bar {
+  border-color: var(--line);
+  background: var(--card);
+}
+
+/* 全螢幕特效沿用深色底 */
+.levelup,
+.reward,
+.evolve,
+.badge-pop,
+.tutorial {
+  background: var(--paper);
+}
+
+.reward-img,
+.reward-fallback {
+  border-color: var(--line);
+}
+
+.ev-label {
+  background: var(--accent);
+  color: #1b2530;
+}
+
+.lu-level {
+  background: var(--accent);
+  color: #1b2530;
+}
+
+.toast {
+  background: var(--sheet);
+  color: var(--on-sheet);
+}
+
+.thumb .x {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.rare-tag,
+.pack-item.on {
+  background: var(--on-sheet);
+}
+
+.pack-item {
+  background: #fff;
+  border-color: var(--on-sheet);
+}
+
+.pack-check {
+  background: var(--sheet);
+  color: var(--on-sheet);
+}
+
+/* 首頁內容垂直置中，避免底部留一大塊空白 */
+.home {
+  justify-content: center;
+  padding-bottom: 6px;
+}
+
+.valko {
+  bottom: -2%;
 }

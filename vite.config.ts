@@ -22,7 +22,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       // heroes/ 是內建圖包，一起預先快取才能離線使用
-      includeAssets: ['icon.svg', 'apple-touch-icon.png', 'heroes/**/*'],
+      includeAssets: ['icon.svg', 'apple-touch-icon.png', 'heroes/**/*', 'scenes/**/*'],
       manifest: {
         name: APP.name,
         short_name: APP.shortName,

@@ -5,7 +5,7 @@ import { levelFromExp, uid } from './level'
 export const DEFAULT_STAGE_LEVELS = [1, 10, 25, 45]
 
 export function makeStage(name: string, fromLevel: number): Stage {
-  return { id: uid(), name, fromLevel, images: [], rewards: [], notes: [] }
+  return { id: uid(), name, fromLevel, images: [], rewards: [], notes: [], scene: '' }
 }
 
 /** 依等級算出目前在第幾個階段 */
@@ -41,6 +41,15 @@ export function inherited(identity: Identity, key: 'images' | 'rewards' | 'notes
     if (list && list.length > 0) return list
   }
   return []
+}
+
+/** 目前階段的場景，沒設就往前找 */
+export function inheritedScene(identity: Identity): string {
+  for (let i = stageIndex(identity); i >= 0; i--) {
+    const sc = identity.stages[i]?.scene
+    if (sc) return sc
+  }
+  return ''
 }
 
 /** 整理階段：依等級排序，並確保第一個從 lv.1 開始 */

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Identity } from '../types'
-import { levelFromExp, levelStart } from '../level'
+import { levelFromExp, levelInfo, levelStart } from '../level'
 import { stageIndex } from '../stage'
 import { CloseIcon } from '../Icons'
 import { StageHero } from './StageHero'
@@ -54,7 +54,20 @@ export function StageSheet({ identity, onClose }: { identity: Identity; onClose:
                 <div className="stage-tag mono">
                   {locked ? `lv.${st.fromLevel} 解鎖` : i === here ? '目前階段' : `lv.${st.fromLevel} 已解鎖`}
                 </div>
-                {locked && <div className="stage-need mono">還差 {need.toLocaleString()} exp</div>}
+                {locked ? (
+                  <div className="stage-need mono">還差 {need.toLocaleString()} EXP</div>
+                ) : (
+                  identity.skills.length > 0 && (
+                    <div className="sheet-skills">
+                      {identity.skills.map((k) => (
+                        <span key={k.id} className="chip">
+                          {k.name}
+                          <b>lv.{levelInfo(k.exp).level}</b>
+                        </span>
+                      ))}
+                    </div>
+                  )
+                )}
               </div>
             )
           })}

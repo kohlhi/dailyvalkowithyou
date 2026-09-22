@@ -4,6 +4,7 @@ import { actions, getState, greetDue, pendingEvent, tick, useStore } from './sto
 import type { TapResult } from './store'
 import { CATEGORY_LABEL, levelInfo, streakFrom } from './level'
 import { displayName } from './stage'
+import { APP } from './appConfig'
 import { sfx } from './sound'
 import { BackIcon, GridIcon, KeyIcon, PotionIcon, SmileyIcon, Sparkle, SwordIcon } from './Icons'
 import { Home } from './screens/Home'
@@ -172,7 +173,7 @@ export default function App() {
   }
 
   let title = s.name
-  let sub = 'lvl up ↑'
+  let sub = APP.tagline
   if (screen.name === 'tasks') sub = CATEGORY_LABEL[screen.category]
   if (screen.name === 'form') {
     title = screen.task ? '編輯任務' : '自訂任務'
@@ -240,6 +241,7 @@ export default function App() {
               category={screen.category}
               onResult={onResult}
               onAdd={() => go({ name: 'form', category: screen.category, back: screen })}
+              onEdit={(t) => go({ name: 'form', category: t.category, task: t, back: screen })}
             />
           )}
           {screen.name === 'form' && (
