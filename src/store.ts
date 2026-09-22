@@ -7,6 +7,8 @@ import { APP } from './appConfig'
 import { blobToDataUrl, builtinId, dataUrlToBlob, listImages, putImage } from './images'
 
 const KEY = 'daily-quest-v1'
+/** 讀不開的資料會原封不動搬到這裡，不直接丟掉，之後才有機會救回來 */
+const KEY_BROKEN = 'daily-quest-v1-broken'
 /** 目前的資料格式版本，只在這裡改一次 */
 const VERSION = 7
 
@@ -207,7 +209,10 @@ function normalize(raw: unknown): State | null {
   if (!raw || typeof raw !== 'object') return null
   const r = raw as Record<string, unknown>
   const v = Number(r.version)
-  if (!(v >= 1 && v <= VERSION)) return null
+  // 版本比程式碼新的資料也照讀。使用者可能先開到新版，下次卻被 Service Worker
+  // 餵回舊版；這時認不得的新欄位會掉，但總比整份洗掉好，而且下面會標回目前版本，
+  // 等他再開到新版時升級路徑會把欄位補回來。
+  if (!(v >= 1)) return null
   if (!Array.isArray(r.identities) || !Array.isArray(r.tasks) || r.identities.length === 0) return null
 
   const identities = (r.identities as Record<string, unknown>[]).map(upgradeIdentity)
@@ -314,14 +319,23 @@ function rollEvent(s: State): State {
 }
 
 function load(): State {
+  let raw: string | null = null
   try {
-    const raw = localStorage.getItem(KEY)
+    raw = localStorage.getItem(KEY)
     if (raw) {
       const s = normalize(JSON.parse(raw))
       if (s) return rollEvent(refreshPeriods(s))
     }
   } catch (e) {
     console.error('load failed', e)
+  }
+  // 有資料卻讀不開，等一下的寫回會把它蓋掉，所以先原封不動留一份備份。
+  if (raw) {
+    try {
+      localStorage.setItem(KEY_BROKEN, raw)
+    } catch (e) {
+      console.error('backup failed', e)
+    }
   }
   return rollEvent(defaultState())
 }
