@@ -1,11 +1,16 @@
 :root {
-  /* 深色主題，色票取自場景插畫 */
-  --paper: #1e2a37;
-  --paper-2: #26344400;
+  /* 深色主題，背景三色漸層由上到下 */
+  --grad-top: #1b2c2f;
+  --grad-mid: #2a445d;
+  --grad-bottom: #4a767a;
+  /* 實心的深底色，用在「亮底深字」與圖示挖空 */
+  --paper: #1b2c2f;
+  /* 浮出的深色面板，壓在漸層任何一段上都讀得出來 */
+  --panel: #1d3038;
   --ink: #f3eee4;
   --muted: #93a6b9;
-  --line: #44586d;
-  --card: #26343f;
+  --line: #4d6b78;
+  --card: #22363f;
   /* 浮出的白色面板（進化之路、統計卡） */
   --sheet: #f7f2e8;
   --on-sheet: #1e2a37;
@@ -16,11 +21,6 @@
   color-scheme: dark;
 }
 
-body {
-  background: linear-gradient(175deg, #23303e 0%, #1b2632 60%, #1a232e 100%);
-  background-attachment: fixed;
-}
-
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -29,10 +29,12 @@ body {
 html,
 body {
   margin: 0;
-  background: var(--paper);
   color: var(--ink);
   font-family: var(--font);
 }
+
+/* html 不能設背景，否則 body 的漸層就不會往整個畫布延伸，
+   畫面下緣會出現接縫 */
 
 body {
   -webkit-font-smoothing: antialiased;
@@ -2980,4 +2982,89 @@ button.manage-main {
 
 .valko {
   bottom: -2%;
+}
+
+/* ---------- 漸層底下的表面 ---------- */
+/* 深色彈出面板用實心底，壓在漸層任何一段上都清楚 */
+.modal {
+  background: var(--panel);
+}
+
+/* 全螢幕特效已經直接吃 body 的漸層，這裡不要再蓋掉 */
+.levelup,
+.reward,
+.evolve,
+.badge-pop,
+.tutorial {
+  background-attachment: fixed;
+}
+
+/* 卡片在漸層上略帶透明，讓底色透一點出來 */
+.task-card,
+.text-input,
+.ghost,
+.toggle,
+.line-list li,
+.manage-list li,
+.thumb,
+.seg-btn,
+.pick,
+.icon-btn,
+.tab,
+.badge-shelf,
+.badge-summary,
+.bar {
+  background: rgba(34, 54, 63, 0.72);
+}
+
+.task-card.done {
+  background: var(--ink);
+}
+
+.seg-btn.on,
+.pick.on,
+.line-list li.current,
+.tut-circle.on,
+.tut-pill.on,
+.tab.active {
+  background: var(--ink);
+}
+
+/* ---------- 背景漸層：三個指定色由上到下，中間補停點讓過渡更柔 ----------
+   用固定定位的圖層而不是 background-attachment: fixed，
+   因為 iOS Safari 對後者在捲動與回彈時的表現不穩定。 */
+body {
+  background-color: var(--grad-mid);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    var(--grad-top) 0%,
+    #21353f 22%,
+    var(--grad-mid) 48%,
+    #375c6c 76%,
+    var(--grad-bottom) 100%
+  );
+}
+
+/* 全螢幕特效自己就是滿版，直接畫同一道漸層 */
+.levelup,
+.reward,
+.evolve,
+.badge-pop,
+.tutorial {
+  background: linear-gradient(
+    180deg,
+    var(--grad-top) 0%,
+    #21353f 22%,
+    var(--grad-mid) 48%,
+    #375c6c 76%,
+    var(--grad-bottom) 100%
+  );
 }
