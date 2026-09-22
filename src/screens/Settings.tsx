@@ -4,16 +4,32 @@ import { actions, useStore } from '../store'
 import { levelInfo } from '../level'
 import { allImageIds, displayName } from '../stage'
 import { sfx } from '../sound'
-import { BookIcon, DiceIcon, GiftIcon, MuteIcon, PencilIcon, PlusIcon, SoundIcon, SparkleIcon, SmileyIcon } from '../Icons'
+import {
+  BookIcon,
+  ChevronIcon,
+  DiceIcon,
+  GiftIcon,
+  MuteIcon,
+  PencilIcon,
+  PlusIcon,
+  SmileyIcon,
+  SoundIcon,
+  SparkleIcon,
+} from '../Icons'
 
 const FEEDBACK: { key: keyof Prefs; label: string; hint: string; Icon: typeof SoundIcon }[] = [
-  { key: 'confirm', label: '完成前先確認', hint: '點任務後由小人詢問一次', Icon: SmileyIcon },
+  { key: 'confirm', label: '完成任務時確認', hint: '點任務後由角色詢問一次', Icon: SmileyIcon },
   { key: 'greet', label: '開啟時打招呼', hint: '隔一段時間再開啟才會出現', Icon: SmileyIcon },
   { key: 'sound', label: '音效', hint: '完成任務與升級的聲音', Icon: SoundIcon },
   { key: 'animation', label: '特效動畫', hint: '星星爆開與卡片彈跳', Icon: SparkleIcon },
   { key: 'events', label: '每日隨機事件', hint: '開啟 App 時可能遇到額外任務', Icon: DiceIcon },
   { key: 'reward', label: '每日達成獎勵圖', hint: '當日每日任務全完成時播放', Icon: GiftIcon },
 ]
+
+/** 一個身份最多幾種，企劃表定的 */
+const MAX_IDENTITIES = 5
+
+type Section = 'feedback' | 'identity' | 'data' | 'install'
 
 export function Settings({
   onToast,
@@ -28,18 +44,24 @@ export function Settings({
 }) {
   const s = useStore()
   const importRef = useRef<HTMLInputElement>(null)
+  const [open, setOpen] = useState<Section | null>(null)
   const [newIdentity, setNewIdentity] = useState('')
   const [busy, setBusy] = useState(false)
 
+  const toggleSection = (k: Section) => {
+    sfx.tap()
+    setOpen((o) => (o === k ? null : k))
+  }
+
   const addIdentity = () => {
     const n = newIdentity.trim()
-    if (!n) return
+    if (!n || s.identities.length >= MAX_IDENTITIES) return
     const id = actions.addIdentity(n)
     setNewIdentity('')
     onEditIdentity(id)
   }
 
-  const toggle = (key: keyof Prefs) => {
+  const togglePref = (key: keyof Prefs) => {
     const next = !s.prefs[key]
     actions.setPref(key, next)
     if (key === 'sound') {
@@ -57,7 +79,7 @@ export function Settings({
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `daily-quest-${new Date().toISOString().slice(0, 10)}.json`
+      a.download = `valko-${new Date().toISOString().slice(0, 10)}.json`
       a.click()
       setTimeout(() => URL.revokeObjectURL(url), 1000)
     } finally {
@@ -74,30 +96,34 @@ export function Settings({
   }
 
   return (
-    <div className="screen settings">
-      <section className="block">
-        <h2 className="block-title">使用者名</h2>
-        <input
-          className="text-input"
-          value={s.name}
-          maxLength={24}
-          placeholder="BROKEN SWORDS"
-          onChange={(e) => actions.setName(e.target.value)}
-        />
-      </section>
+    <div className="screen settings pref">
+      <div className="pref-row static">
+        <span className="pref-label">使用者名</span>
+      </div>
+      <input
+        className="pref-input"
+        value={s.name}
+        maxLength={24}
+        placeholder="輸入一個名字"
+        onChange={(e) => actions.setName(e.target.value)}
+      />
 
-      <section className="block">
-        <h2 className="block-title">
-          回饋與功能 <span className="mono small">都可單獨關掉</span>
-        </h2>
-        <div className="stack">
+      <button
+        className={'pref-row' + (open === 'feedback' ? ' open' : '')}
+        onClick={() => toggleSection('feedback')}
+      >
+        <span className="pref-label">回饋與功能</span>
+        <ChevronIcon size={20} className="pref-arrow" />
+      </button>
+      {open === 'feedback' && (
+        <div className="pref-body">
           {FEEDBACK.map(({ key, label, hint, Icon }) => {
             const on = s.prefs[key]
             return (
               <button
                 key={key}
                 className={'toggle' + (on ? ' on' : '')}
-                onClick={() => toggle(key)}
+                onClick={() => togglePref(key)}
                 aria-pressed={on}
               >
                 <span className="toggle-label">
@@ -112,53 +138,72 @@ export function Settings({
             )
           })}
           <button className="ghost" onClick={onEvents}>
-            <DiceIcon size={18} /> 編輯事件池（{s.events.length}）
-          </button>
-          <button className="ghost" onClick={onTutorial}>
-            <BookIcon size={18} /> 重看使用教學
+            <DiceIcon size={18} /> 編輯每日事件池（{s.events.length}）
           </button>
         </div>
-      </section>
+      )}
 
-      <section className="block">
-        <h2 className="block-title">
-          身份 <span className="mono small">各自的圖庫、寄語、技能與等級</span>
-        </h2>
-        <ul className="line-list">
-          {s.identities.map((i) => (
-            <li key={i.id} className={i.id === s.currentIdentityId ? 'current' : ''}>
-              <span className="grow">{displayName(i)}</span>
-              <span className="mono small">
-                lv.{levelInfo(i.exp).level} · {i.stages.length} 階 · {allImageIds(i).length} 圖 · {i.skills.length} 技能
-              </span>
-              <button className="icon-btn small" aria-label="編輯身份" onClick={() => onEditIdentity(i.id)}>
-                <PencilIcon size={16} />
-              </button>
-            </li>
-          ))}
-        </ul>
-        <div className="add-row">
-          <input
-            className="text-input inline"
-            placeholder="新身份，例如：繪師、健身"
-            value={newIdentity}
-            maxLength={20}
-            onChange={(e) => setNewIdentity(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') addIdentity()
-            }}
-          />
-          <button className="icon-btn" aria-label="新增身份" disabled={!newIdentity.trim()} onClick={addIdentity}>
-            <PlusIcon />
-          </button>
+      <button
+        className={'pref-row' + (open === 'identity' ? ' open' : '')}
+        onClick={() => toggleSection('identity')}
+      >
+        <span className="pref-label">身份</span>
+        <ChevronIcon size={20} className="pref-arrow" />
+      </button>
+      {open === 'identity' && (
+        <div className="pref-body">
+          <ul className="line-list">
+            {s.identities.map((i) => (
+              <li key={i.id} className={i.id === s.currentIdentityId ? 'current' : ''}>
+                <span className="grow">{displayName(i)}</span>
+                <span className="mono small">
+                  lv.{levelInfo(i.exp).level} · {i.stages.length} 階 · {allImageIds(i).length} 圖
+                </span>
+                <button className="icon-btn small" aria-label="編輯身份" onClick={() => onEditIdentity(i.id)}>
+                  <PencilIcon size={16} />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="add-row">
+            <input
+              className="text-input inline"
+              placeholder={`自訂身份，最多 ${MAX_IDENTITIES} 種`}
+              value={newIdentity}
+              maxLength={20}
+              onChange={(e) => setNewIdentity(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') addIdentity()
+              }}
+            />
+            <button
+              className="icon-btn"
+              aria-label="新增身份"
+              disabled={!newIdentity.trim() || s.identities.length >= MAX_IDENTITIES}
+              onClick={addIdentity}
+            >
+              <PlusIcon />
+            </button>
+          </div>
+          {s.identities.length >= MAX_IDENTITIES && (
+            <p className="help">已經有 {MAX_IDENTITIES} 種身份了，要新增請先刪掉一個。</p>
+          )}
         </div>
-      </section>
+      )}
 
-      <section className="block">
-        <h2 className="block-title">資料</h2>
-        <div className="stack">
+      <button className="pref-row" onClick={onTutorial}>
+        <span className="pref-label">重看使用教學</span>
+        <BookIcon size={20} className="pref-arrow" />
+      </button>
+
+      <button className={'pref-row' + (open === 'data' ? ' open' : '')} onClick={() => toggleSection('data')}>
+        <span className="pref-label">資料</span>
+        <ChevronIcon size={20} className="pref-arrow" />
+      </button>
+      {open === 'data' && (
+        <div className="pref-body">
           <button className="ghost" disabled={busy} onClick={exportData}>
-            匯出備份 (含圖片)
+            匯出備份（含圖片）
           </button>
           <button className="ghost" disabled={busy} onClick={() => importRef.current?.click()}>
             匯入備份
@@ -185,15 +230,23 @@ export function Settings({
             全部重置
           </button>
         </div>
-      </section>
+      )}
 
-      <section className="block">
-        <h2 className="block-title">安裝到 iPhone</h2>
-        <p className="help">
-          用 Safari 開啟這個網址 → 點下方「分享」→「加入主畫面」。之後就能像 App 一樣全螢幕使用，離線也能開。
-          資料存在手機本機，換手機前記得先匯出備份。
-        </p>
-      </section>
+      <button
+        className={'pref-row' + (open === 'install' ? ' open' : '')}
+        onClick={() => toggleSection('install')}
+      >
+        <span className="pref-label">安裝到手機</span>
+        <ChevronIcon size={20} className="pref-arrow" />
+      </button>
+      {open === 'install' && (
+        <div className="pref-body">
+          <p className="help">
+            用 Safari 開啟這個網址，點下方的分享按鈕，選「加入主畫面」。之後就能像 App 一樣全螢幕使用，離線也能開。
+            資料存在手機本機，換手機前記得先匯出備份。
+          </p>
+        </div>
+      )}
     </div>
   )
 }

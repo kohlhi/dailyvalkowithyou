@@ -6,7 +6,7 @@ import { CATEGORY_LABEL, levelInfo, streakFrom } from './level'
 import { displayName } from './stage'
 import { APP } from './appConfig'
 import { sfx } from './sound'
-import { BackIcon, GridIcon, KeyIcon, PotionIcon, SmileyIcon, Sparkle, SwordIcon } from './Icons'
+import { BackIcon, CalendarIcon, GridIcon, SmileyIcon, Sparkle, StarIcon, TrophyIcon } from './Icons'
 import { Home } from './screens/Home'
 import { TaskList } from './screens/TaskList'
 import { TaskForm } from './screens/TaskForm'
@@ -45,10 +45,10 @@ type Overlay =
   | { kind: 'evolve' }
   | { kind: 'badge'; id: string; note?: string }
 
-const TABS: { category: Category; Icon: typeof SwordIcon; label: string }[] = [
-  { category: 'daily', Icon: SwordIcon, label: '每日任務' },
-  { category: 'weekly', Icon: PotionIcon, label: '週任務' },
-  { category: 'achievement', Icon: KeyIcon, label: '成就' },
+const TABS: { category: Category; Icon: typeof StarIcon; label: string }[] = [
+  { category: 'daily', Icon: StarIcon, label: '每日任務' },
+  { category: 'weekly', Icon: CalendarIcon, label: '週任務' },
+  { category: 'achievement', Icon: TrophyIcon, label: '成就' },
 ]
 
 function screenKey(sc: Screen): string {

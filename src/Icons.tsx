@@ -215,3 +215,36 @@ export const BookIcon = ({ size, className }: P) => (
     <path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5a2.5 2.5 0 0 1 2.5 2.5V5.5Z" />
   </svg>
 )
+
+/* ---------- 底部分頁：每日 = 星、每週 = 日曆、成就 = 獎盃 ---------- */
+
+export const StarIcon = ({ size, className }: P) => (
+  <svg {...base(size, className)} strokeWidth={2}>
+    <path d="M12 2.6c1.15 5.7 2.55 7.1 8.25 8.25-5.7 1.15-7.1 2.55-8.25 8.25-1.15-5.7-2.55-7.1-8.25-8.25 5.7-1.15 7.1-2.55 8.25-8.25Z" />
+  </svg>
+)
+
+export const CalendarIcon = ({ size, className }: P) => (
+  <svg {...base(size, className)} strokeWidth={2}>
+    <rect x="3.4" y="5.4" width="17.2" height="15.2" rx="3.4" />
+    <path d="M3.6 10.4h16.8" />
+    <path d="M8.3 3.2v4.2M15.7 3.2v4.2" />
+  </svg>
+)
+
+export const TrophyIcon = ({ size, className }: P) => (
+  <svg {...base(size, className)} strokeWidth={2}>
+    <path d="M6.6 3.4h10.8v4.8a5.4 5.4 0 0 1-10.8 0V3.4Z" />
+    <path d="M6.6 5.2H4.2a2.6 2.6 0 0 0 2.6 4.4" />
+    <path d="M17.4 5.2h2.4a2.6 2.6 0 0 1-2.6 4.4" />
+    <path d="M12 13.6v3.4" />
+    <path d="M8.6 20.6h6.8" />
+    <path d="M12 4.9l.85 1.95 2.1.2-1.6 1.45.47 2.1L12 9.5l-1.82 1.1.47-2.1-1.6-1.45 2.1-.2L12 4.9Z" fill="currentColor" stroke="none" />
+  </svg>
+)
+
+export const ChevronIcon = ({ size, className }: P) => (
+  <svg {...base(size, className)} strokeWidth={2.4}>
+    <path d="M9 5.5 15.5 12 9 18.5" />
+  </svg>
+)

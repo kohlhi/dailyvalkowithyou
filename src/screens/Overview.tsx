@@ -23,37 +23,35 @@ export function Overview({
   const days = Object.entries(s.stats.dayCounts)
   const todayCount = s.stats.dayCounts[today] ?? 0
   const weekCount = days.reduce((a, [k, n]) => a + (weekKey(new Date(k + 'T12:00:00')) === week ? n : 0), 0)
-  const totalExp = s.identities.reduce((a, i) => a + i.exp, 0)
   const streak = streakFrom(days.map(([k]) => k))
   const recent = [...s.unlocked].sort((a, b) => b.at - a.at).slice(0, 4)
+
   const nameOf = (id: string | null) =>
-    id === null ? '所有身份' : (() => {
-      const found = s.identities.find((i) => i.id === id)
-      return found ? displayName(found) : '?'
-    })()
+    id === null
+      ? '所有身份'
+      : (() => {
+          const found = s.identities.find((i) => i.id === id)
+          return found ? displayName(found) : '?'
+        })()
   const skillOf = (id: string | null) =>
     id === null ? null : (s.identities.flatMap((i) => i.skills).find((k) => k.id === id)?.name ?? null)
 
   return (
     <div className="screen overview">
-      <div className="stats">
-        <div className="stat">
-          <span className="mono big">{todayCount}</span>
-          <span className="small">今日完成</span>
+      <div className="streak-card">
+        <FlameIcon size={26} />
+        <span className="streak-num mono">{String(streak).padStart(2, '0')}</span>
+        <span className="streak-label">連續天數</span>
+      </div>
+
+      <div className="stat-row">
+        <div className="stat-box">
+          <span className="mono stat-num">{todayCount}</span>
+          <span className="stat-label">今日完成</span>
         </div>
-        <div className="stat">
-          <span className="mono big">{weekCount}</span>
-          <span className="small">本週完成</span>
-        </div>
-        <div className="stat">
-          <span className="mono big">
-            <FlameIcon size={20} /> {streak}
-          </span>
-          <span className="small">連續天數</span>
-        </div>
-        <div className="stat">
-          <span className="mono big">{totalExp}</span>
-          <span className="small">總 exp</span>
+        <div className="stat-box">
+          <span className="mono stat-num">{weekCount}</span>
+          <span className="stat-label">本週完成</span>
         </div>
       </div>
 
@@ -62,10 +60,10 @@ export function Overview({
           {recent.length > 0 ? (
             recent.map((u) => {
               const a = ACHIEVEMENTS.find((x) => x.id === u.id)
-              return a ? <Badge key={u.id} icon={a.icon} tier={a.tier} size={46} /> : null
+              return a ? <Badge key={u.id} icon={a.icon} tier={a.tier} size={40} /> : null
             })
           ) : (
-            <Badge icon="sword" tier={1} locked size={46} />
+            <Badge icon="sword" tier={1} locked size={40} />
           )}
         </div>
         <div className="badge-shelf-text">
@@ -95,7 +93,7 @@ export function Overview({
                     <div className="manage-main">
                       <span className="manage-title">{t.title}</span>
                       <span className="mono small">
-                        +{t.exp} exp · {nameOf(t.identityId)}
+                        +{t.exp} EXP · {nameOf(t.identityId)}
                         {skill ? ` · ${skill}` : ''}
                         {t.steps.length > 0 ? ` · ${t.steps.length} 步驟` : t.target > 1 ? ` · ${t.target} 次` : ''}
                       </span>
