@@ -19,8 +19,8 @@ interface Card {
 
 const CARDS: Card[] = [
   {
-    title: '把每天變成一場冒險',
-    body: '設定自己的目標，完成就拿經驗值。角色會跟著你一起升級，今天做的事都會留下痕跡。',
+    title: '每天都是與小狼一起變強的冒險',
+    body: '自由設定自己的目標，完成就拿經驗值。角色會跟著你一起升級，今天做的事都會留下痕跡。',
     art: () => (
       <div className="tut-art tut-hero">
         <Sparkle size={26} className="tut-sp a" />
