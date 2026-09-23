@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { pendingEvent, useStore } from '../store'
 import { levelInfo, pick } from '../level'
-import { displayName, inherited, inheritedScene, nextStage } from '../stage'
+import { displayName, inherited, inheritedScene } from '../stage'
 import { useImageUrl } from '../images'
 import { sfx } from '../sound'
 import { DefaultHero, DiceIcon, Sparkle } from '../Icons'
@@ -12,7 +12,6 @@ export function Home({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () 
   const me = s.identities.find((i) => i.id === s.currentIdentityId) ?? s.identities[0]
   const info = levelInfo(me.exp)
   const event = pendingEvent(s)
-  const upcoming = nextStage(me)
   const scene = inheritedScene(me)
 
   // 每次進首頁 / 切換身份都隨機抽一張角色圖與一句台詞，點角色可再抽
@@ -70,9 +69,6 @@ export function Home({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () 
           <span className="class-name">{displayName(me)}</span>
           <span className="level mono">
             lv.{info.level} <span className="level-exp">({me.exp} EXP)</span>
-          </span>
-          <span className="info-hint mono">
-            {upcoming ? `進化之路 · 下一階 lv.${upcoming.fromLevel}` : '進化之路'} ›
           </span>
         </button>
       </div>

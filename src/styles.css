@@ -2388,16 +2388,6 @@ button.manage-main {
   margin-top: 0;
 }
 
-.info-hint {
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.06em;
-  border-bottom: 2px dotted var(--ink);
-  padding-bottom: 2px;
-  margin-top: 4px;
-  opacity: 0.75;
-}
-
 .identity-info:active:not(:disabled) {
   transform: scale(0.97);
 }
@@ -2690,10 +2680,6 @@ button.manage-main {
 .level-exp {
   font-size: 13px;
   color: var(--muted);
-}
-
-.info-hint {
-  border-bottom-color: var(--line);
 }
 
 /* ---------- 進度條 ---------- */
