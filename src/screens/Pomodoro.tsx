@@ -9,6 +9,7 @@ import {
   休息長度選項,
 } from '../focus'
 import { sfx } from '../sound'
+import { 開始守著, 響, 收工 } from '../chime'
 import { 清單角色圖 } from '../內容'
 
 const 圓周 = 2 * Math.PI * 86
@@ -21,8 +22,10 @@ export function Pomodoro() {
   useEffect(() => {
     const 檢查 = () => {
       const r = focus.結算()
-      if (r === 'focus-done') sfx.levelUp()
-      else if (r === 'break-done') sfx.complete()
+      // 用 <audio> 的鈴聲而不是 sfx，sfx 是純 Web Audio，鎖屏時會被暫停
+      if (r) 響()
+      // 整輪跑完就不用再保住頁面了，省點電
+      if (r === 'break-done') 收工()
       重畫()
     }
     檢查()
@@ -106,6 +109,9 @@ export function Pomodoro() {
             className="pill"
             onClick={() => {
               sfx.tap()
+              // 趁這一下的點擊把鈴聲解鎖，並開始播聽不見的音訊保住頁面，
+              // 時間到的時候已經沒有手勢可以做這些了
+              開始守著()
               focus.開始專注()
             }}
           >
@@ -120,6 +126,7 @@ export function Pomodoro() {
           onClick={() => {
             sfx.tap()
             focus.停止()
+            收工()
           }}
         >
           放棄這一輪
@@ -132,6 +139,7 @@ export function Pomodoro() {
           onClick={() => {
             sfx.tap()
             focus.停止()
+            收工()
           }}
         >
           休息夠了，收工
@@ -154,7 +162,7 @@ export function Pomodoro() {
       <p className="hint mono">
         今天完成 {輪數} 輪
         <br />
-        計時靠時鐘算，關掉 App 也不會亂；但時間到時不會主動通知你
+        計時靠時鐘算，關掉 App 也不會亂
       </p>
     </div>
   )

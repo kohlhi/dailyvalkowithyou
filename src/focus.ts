@@ -29,7 +29,7 @@ export interface Focus {
   day: string
 }
 
-export const 專注長度選項 = [15, 25, 40, 50]
+export const 專注長度選項 = [5, 15, 25, 40, 50]
 export const 休息長度選項 = [5, 10, 15]
 
 /** 結束後超過這麼久才回到 App，就不自動接下一段（使用者早就離開了） */
