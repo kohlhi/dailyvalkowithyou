@@ -70,7 +70,7 @@ export function Lofi() {
       <p className="hint mono">
         聲音是程式即時做出來的，不用網路也能放
         <br />
-        手機鎖屏後聲音通常會停，這是網頁 App 的限制
+        鎖屏後也會繼續放，鎖定畫面可以直接暫停
       </p>
     </div>
   )
