@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import {
   focus,
   useFocus,
@@ -10,6 +10,8 @@ import {
 } from '../focus'
 import { sfx } from '../sound'
 import { 開始守著, 響, 收工 } from '../chime'
+import { 通知, 通知狀態, 要求許可 } from '../notify'
+import type { 通知狀態 as 通知狀態型 } from '../notify'
 import { 清單角色圖 } from '../內容'
 
 const 圓周 = 2 * Math.PI * 86
@@ -18,14 +20,19 @@ export function Pomodoro() {
   const f = useFocus()
   // 每 250ms 重畫一次。真正的時間來源是 f.endsAt，這裡只是讓畫面跟上。
   const [, 重畫] = useReducer((n: number) => n + 1, 0)
+  const [許可, 設許可] = useState<通知狀態型>(() => 通知狀態())
 
   useEffect(() => {
     const 檢查 = () => {
       const r = focus.結算()
       // 用 <audio> 的鈴聲而不是 sfx，sfx 是純 Web Audio，鎖屏時會被暫停
       if (r) 響()
-      // 整輪跑完就不用再保住頁面了，省點電
-      if (r === 'break-done') 收工()
+      if (r === 'focus-done') void 通知('專注結束', '休息一下，起來走走')
+      else if (r === 'break-done') {
+        void 通知('休息結束', '準備好就再來一輪')
+        // 整輪跑完就不用再保住頁面了，省點電
+        收工()
+      }
       重畫()
     }
     檢查()
@@ -104,6 +111,23 @@ export function Pomodoro() {
               ))}
             </div>
           </div>
+
+          {許可 !== '不支援' && (
+            <button
+              className={'focus-notify' + (許可 === '已允許' ? ' on' : '')}
+              disabled={許可 !== '可以問'}
+              onClick={() => {
+                sfx.tap()
+                void 要求許可().then(設許可)
+              }}
+            >
+              {許可 === '已允許'
+                ? '時間到會跳出橫幅 ✓'
+                : 許可 === '被拒絕'
+                  ? '橫幅被關掉了，要去手機設定裡開'
+                  : '時間到時也跳出橫幅通知我'}
+            </button>
+          )}
 
           <button
             className="pill"
