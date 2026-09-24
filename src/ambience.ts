@@ -15,7 +15,20 @@
  * 把 <audio> 解鎖，算完再換成真的內容。
  */
 
+import type { 音樂內容 } from './內容'
+
 export type 音色 = 'rain' | 'waves' | 'wind' | 'fire'
+
+/** 要播的東西：程式合成的環境音，或使用者自己放的音樂檔 */
+export type 項目 = { 種類: '合成'; id: 音色 } | { 種類: '音樂'; 曲: 音樂內容 }
+
+/** 每個項目的識別字串，畫面用它判斷哪一張卡在播 */
+export function 項目id(項: 項目): string {
+  return 項.種類 === '合成' ? 項.id : '音樂:' + 項.曲.檔名
+}
+
+/** 音樂檔放在 public/lofi/ 底下 */
+export const 音樂路徑 = (檔名: string) => '/lofi/' + 檔名
 
 export const 音色清單: { id: 音色; 名稱: string; 說明: string }[] = [
   { id: 'rain', 名稱: '下雨', 說明: '窗外一直下，適合讀書' },
@@ -239,7 +252,7 @@ async function 取音訊網址(kind: 音色): Promise<string> {
 // ── 播放 ───────────────────────────────────────────────────
 
 let el: HTMLAudioElement | null = null
-let 目前: 音色 | null = null
+let 目前: string | null = null
 let 音量 = 讀音量()
 /** 每次播放給一個編號，非同步算完才知道使用者有沒有又改主意 */
 let 這次 = 0
@@ -270,14 +283,18 @@ function 音訊元素(): HTMLAudioElement {
   return el
 }
 
-function 設定鎖屏資訊(kind: 音色) {
+function 設定鎖屏資訊(項: 項目) {
   const ms = navigator.mediaSession
   if (!ms) return
-  const 名 = 音色清單.find((s) => s.id === kind)?.名稱 ?? '環境音'
+  const 名 =
+    項.種類 === '合成'
+      ? (音色清單.find((s) => s.id === 項.id)?.名稱 ?? '環境音')
+      : 項.曲.名稱
+  const 作者 = 項.種類 === '音樂' && 項.曲.作者 ? 項.曲.作者 : 'DAILY VALKO'
   try {
     ms.metadata = new MediaMetadata({
       title: 名,
-      artist: 'DAILY VALKO',
+      artist: 作者,
       album: '陪你一起',
     })
     ms.playbackState = 'playing'
@@ -293,7 +310,7 @@ function 設定鎖屏資訊(kind: 音色) {
 }
 
 export const ambience = {
-  get 播放中(): 音色 | null {
+  get 播放中(): string | null {
     return 目前
   },
 
@@ -302,13 +319,14 @@ export const ambience = {
   },
 
   /** 一定要在使用者點擊時呼叫，iOS 才准播 */
-  播放(kind: 音色) {
+  播放(項: 項目) {
     const a = 音訊元素()
     const 我的編號 = ++這次
-    目前 = kind
+    目前 = 項目id(項)
 
-    // 先用無聲音訊在「點擊的當下」解鎖元素，
-    // 不然等下面算完音訊，手勢已經結束，iOS 會拒絕播放
+    // 先用無聲音訊在「點擊的當下」解鎖元素。
+    // 合成音要算，音樂檔要下載，兩種都是非同步的，
+    // 等它們好了手勢早就結束，iOS 會拒絕播放。
     try {
       a.src = 無聲
       a.volume = 音量
@@ -317,16 +335,19 @@ export const ambience = {
       /* 忽略 */
     }
 
-    void 取音訊網址(kind)
+    const 拿網址 =
+      項.種類 === '合成' ? 取音訊網址(項.id) : Promise.resolve(音樂路徑(項.曲.檔名))
+
+    void 拿網址
       .then((url) => {
         if (我的編號 !== 這次) return // 使用者已經改選別的或按停止了
         a.src = url
         a.volume = 音量
-        設定鎖屏資訊(kind)
+        設定鎖屏資訊(項)
         return a.play()
       })
       .catch((e) => {
-        console.error('環境音播不出來', e)
+        console.error('放不出來', e)
         if (我的編號 === 這次) 目前 = null
       })
   },

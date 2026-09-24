@@ -40,7 +40,22 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // 音樂檔不要進安裝包，不然第一次安裝要下載好幾十 MB。
+        // 預設的 globPatterns 本來就不含音訊格式，這裡寫明是為了以後不被改壞。
+        globIgnores: ['**/lofi/**'],
         runtimeCaching: [
+          {
+            // 使用者自己放的音樂：放過一次就存起來，之後離線也聽得到
+            urlPattern: /\/lofi\/.*\.(?:mp3|m4a|aac|ogg|wav)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'valko-lofi',
+              expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 180 },
+              // <audio> 會用 Range 請求拿片段，沒開這個從快取放會失敗
+              rangeRequests: true,
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
             handler: 'CacheFirst',

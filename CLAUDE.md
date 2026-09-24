@@ -72,6 +72,11 @@ Service Worker 會讓使用者先開到新版再被餵回舊版，擋掉就等�
 編成 WAV 再交給 `<audio loop>` 播。0 KB、離線可用、沒有授權問題。
 要加新音色就在 `建場()` 多寫一個分支，不要改成下載 mp3。
 
+**自訂音樂放 `public/lofi/`**：檔案清單在 `內容.ts` 的 `自訂音樂`，使用者自己維護。
+**音樂不進安裝包**（`vite.config.ts` 有 `globIgnores`），否則第一次安裝要下載幾十 MB；
+改用 runtimeCaching 放過一次就快取，離線也聽得到。
+那條規則的 `rangeRequests: true` 不能拿掉，`<audio>` 會用 Range 請求拿片段。
+
 **環境音一定要走 `<audio>`，不要改回 Web Audio 直接接 destination**：
 iOS 把 `<audio>` 當成媒體播放才會在背景繼續。**已在 iPhone 實機驗證：鎖屏後聲音會繼續，
 鎖定畫面也有控制項。** 改回純 Web Audio 就會壞掉，而且在桌機測不出來。

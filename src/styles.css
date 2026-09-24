@@ -3541,3 +3541,12 @@ body::before {
 .focus-notify:disabled {
   opacity: 0.6;
 }
+
+/* 陪伴頁的分區標題（音樂／環境音），只有放了自訂音樂才會出現 */
+.lofi-group {
+  margin: 4px 2px -2px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
