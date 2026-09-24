@@ -7,7 +7,7 @@ import { displayName } from './stage'
 import { APP } from './appConfig'
 import { sfx } from './sound'
 import { BackIcon, CalendarIcon, GridIcon, SmileyIcon, Sparkle, StarIcon, TrophyIcon } from './Icons'
-import { Home } from './screens/Home'
+import { HomePages } from './screens/HomePages'
 import { TaskList } from './screens/TaskList'
 import { TaskForm } from './screens/TaskForm'
 import { Settings } from './screens/Settings'
@@ -230,7 +230,7 @@ export default function App() {
       <main className="main">
         <div className="screen-anim" key={screenKey(screen)}>
           {screen.name === 'home' && (
-            <Home
+            <HomePages
               key={s.currentIdentityId}
               onSwitch={() => setSwitching(true)}
               onEvent={() => push({ kind: 'event' })}

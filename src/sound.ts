@@ -10,6 +10,11 @@ function ac(): AudioContext {
   return ctx
 }
 
+/** 環境音也要用同一個 AudioContext，瀏覽器對數量有限制 */
+export function audioContext(): AudioContext {
+  return ac()
+}
+
 function note(freq: number, at: number, dur: number, type: OscillatorType = 'sine', gain = 0.16) {
   const c = ac()
   const o = c.createOscillator()

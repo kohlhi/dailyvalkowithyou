@@ -3187,3 +3187,337 @@ body::before {
     transform: none;
   }
 }
+
+/* ---------- 首頁三頁：主頁 / 番茄鐘 / 陪伴 ---------- */
+.home-pages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* .app 左右有 20px 內距，軌道要滿版才滑得漂亮，所以往外推回去 */
+.home-track {
+  flex: 1;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -20px;
+  width: calc(100% + 40px);
+}
+
+.home-track::-webkit-scrollbar {
+  display: none;
+}
+
+.home-page {
+  flex: 0 0 100%;
+  width: 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+}
+
+.home-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0 2px;
+}
+
+.home-tab {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-radius: 999px;
+  padding: 5px 14px;
+}
+
+.home-tab.on {
+  color: var(--on-sheet);
+  background: var(--sheet);
+}
+
+/* ---------- 番茄鐘 ---------- */
+.focus-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.focus-ring-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 1;
+}
+
+.focus-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.focus-ring .ring-bg {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 10;
+  opacity: 0.45;
+}
+
+.focus-ring .ring-fill {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.25s linear;
+}
+
+.focus-ring .ring-fill.rest {
+  stroke: var(--sheet);
+}
+
+.focus-mid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.focus-time {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.focus-phase {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.focus-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.focus-pick-label {
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 28px;
+  text-align: right;
+}
+
+.focus-opts {
+  display: flex;
+  gap: 6px;
+}
+
+.focus-opt {
+  min-width: 46px;
+  padding: 7px 0;
+  font-size: 14px;
+  font-weight: 700;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--ink);
+}
+
+.focus-opt.on {
+  background: var(--sheet);
+  color: var(--on-sheet);
+  border-color: var(--sheet);
+}
+
+.focus-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.focus-hero {
+  width: 76px;
+  height: auto;
+  flex: none;
+}
+
+/* ---------- 陪伴（環境音） ---------- */
+.lofi-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.lofi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lofi-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: 13px 15px;
+  border: 2px solid var(--line);
+  border-radius: 16px 13px 17px 12px / 12px 17px 13px 16px;
+  background: var(--card);
+  color: var(--ink);
+}
+
+.lofi-card.on {
+  background: var(--sheet);
+  color: var(--on-sheet);
+  border-color: var(--sheet);
+}
+
+.lofi-txt {
+  flex: 1;
+  min-width: 0;
+}
+
+.lofi-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.lofi-desc {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.lofi-card.on .lofi-desc {
+  color: #55707f;
+}
+
+.lofi-state {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+  flex: none;
+}
+
+/* 四根小柱子，播放中才會跳動 */
+.lofi-wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 22px;
+  flex: none;
+}
+
+.lofi-wave i {
+  width: 3px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.lofi-card.on .lofi-wave i {
+  opacity: 1;
+  animation: lofi-bounce 1.1s ease-in-out infinite;
+}
+
+.lofi-card.on .lofi-wave i:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.lofi-card.on .lofi-wave i:nth-child(3) {
+  animation-delay: 0.36s;
+}
+.lofi-card.on .lofi-wave i:nth-child(4) {
+  animation-delay: 0.54s;
+}
+
+@keyframes lofi-bounce {
+  0%,
+  100% {
+    height: 6px;
+  }
+  50% {
+    height: 20px;
+  }
+}
+
+.lofi-vol {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 2px 0;
+}
+
+.lofi-vol-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.lofi-vol-num {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 26px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.lofi-slider {
+  flex: 1;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: var(--card);
+}
+
+.lofi-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+}
+
+.lofi-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lofi-card.on .lofi-wave i {
+    animation: none;
+    height: 13px;
+  }
+}

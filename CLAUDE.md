@@ -40,6 +40,8 @@ src/
   level.ts         等級公式、日/週期間 key、連續天數、固定亂數
   images.ts        IndexedDB 圖片 + 內建圖包
   sound.ts         Web Audio 合成音效
+  focus.ts         番茄鐘狀態，獨立 localStorage key
+  ambience.ts      Web Audio 即時合成的環境音（雨／海浪／風／爐火）
   screens/         各個整頁畫面
   components/      彈窗與共用元件
 ```
@@ -57,6 +59,17 @@ src/
 `normalize()` 只擋沒有版本的資料，**比程式碼新的版本要照讀**，不要改回 `v <= VERSION`：
 Service Worker 會讓使用者先開到新版再被餵回舊版，擋掉就等於把他的資料洗掉。
 同理，有資料卻解不開時要先備份到 `KEY_BROKEN` 再開新的。
+
+**番茄鐘刻意不進 store**：它不給 EXP、不算 RPG 資料、也不進備份 JSON，
+所以 `focus.ts` 自己存 `valko-focus-v1`，完全不碰 `VERSION` 與升級路徑。
+要加新功能前先想想能不能也這樣切開，能切就不要動使用者的任務資料。
+
+**倒數用時間戳，不要用計數器**：`focus.ts` 存的是 `endsAt`，畫面每次都用
+`endsAt - Date.now()` 重算。iOS 的 PWA 被切到背景常常整個重新載入，
+用累加的一定會算錯。回到前景時 `結算()` 會自動補算，離開超過一分鐘就不自動接休息。
+
+**環境音不放音檔**：`ambience.ts` 用 Web Audio 即時合成，0 KB、離線可用、沒有授權問題。
+要加新音色就在那裡多寫一個 `建場()` 分支，不要改成下載 mp3。
 
 **統計不從紀錄回推**：`logs` 只保留最新 2000 筆會被截斷。
 長期成就一律讀 `state.stats` 裡的獨立累計欄位（`taskCounts`、`dayCounts`、`goalDays` 等）。
