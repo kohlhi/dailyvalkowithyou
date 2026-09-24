@@ -242,7 +242,13 @@ export function Settings({
       {open === 'install' && (
         <div className="pref-body">
           <p className="help">
-            用 Safari 開啟這個網址，點下方的分享按鈕，選「加入主畫面」。之後就能像 App 一樣全螢幕使用，離線也能開。
+            <b>iPhone</b>：用 Safari 開這個網址，點下方的分享按鈕，選「加入主畫面」。
+          </p>
+          <p className="help">
+            <b>Android</b>：用 Chrome 開這個網址，點右上角選單，選「安裝應用程式」或「加到主畫面」。
+          </p>
+          <p className="help">
+            裝好之後就能像 App 一樣全螢幕使用，離線也能開，番茄鐘的橫幅通知也要裝好才會有。
             資料存在手機本機，換手機前記得先匯出備份。
           </p>
         </div>
