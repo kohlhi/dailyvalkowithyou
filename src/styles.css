@@ -1846,8 +1846,128 @@ button.manage-main {
   margin-left: 5px;
 }
 
-.tut-duo {
-  gap: 26px;
+/* 教學圖卡換成讀書小狼，圖示與說明文字對齊 */
+.tut-hero {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tut-wolf {
+  display: block;
+  height: 78%;
+  width: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.tut-wolf.small {
+  height: 76px;
+}
+
+.tut-wolf.corner {
+  position: absolute;
+  right: 4%;
+  bottom: 2%;
+  height: 92px;
+  transform: rotate(6deg);
+}
+
+.tut-exp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.tut-bar {
+  width: 110px;
+  height: 10px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.tut-bar i {
+  display: block;
+  width: 62%;
+  height: 100%;
+  background: var(--ink);
+}
+
+.tut-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.tut-cap {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tut-tabs,
+.tut-trio {
+  gap: 22px;
+}
+
+.tut-trio {
+  align-items: flex-start;
+  padding-top: 18%;
+}
+
+.tut-ask {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 270px;
+}
+
+.tut-ask .tut-wolf.small {
+  height: 64px;
+}
+
+.tut-bubble {
+  position: relative;
+  border: 2px solid var(--ink);
+  border-radius: 14px 16px 13px 15px / 15px 13px 16px 14px;
+  padding: 7px 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tut-stack .tut-card {
+  padding: 10px 14px;
+  font-size: 15px;
+}
+
+.tut-stack .tut-steps {
+  padding-top: 0;
+  gap: 6px;
+}
+
+.tut-chips {
+  flex-direction: column;
+  max-width: none;
+  gap: 14px;
+}
+
+.tut-chips .tut-wolf.small {
+  height: 88px;
+}
+
+.tut-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tut-row .tut-pill {
+  padding: 8px 14px;
+  font-size: 15px;
 }
 
 .tut-dots {
