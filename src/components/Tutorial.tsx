@@ -20,7 +20,7 @@ interface Card {
 const CARDS: Card[] = [
   {
     title: '每天都是與小狼一起變強的冒險',
-    body: '自由設定自己的目標，完成就拿經驗值。角色會跟著你一起升級，今天做的事都會留下痕跡。',
+    body: '自由設定自己的目標，完成就拿經驗值。小狼會跟著你一起升級，為每天做的事都會留下痕跡。',
     art: () => (
       <div className="tut-art tut-hero">
         <Sparkle size={26} className="tut-sp a" />
@@ -32,7 +32,7 @@ const CARDS: Card[] = [
   },
   {
     title: '三種任務，各有節奏',
-    body: '劍是每日任務，每天 00:00 重置。藥水是週任務，每週一重置。鑰匙是成就，完成後永久保留。',
+    body: '星星是每日任務，每天 00:00 重置。月曆是週任務，每週一重置。獎盃是成就，完成後永久保留。',
     art: () => (
       <div className="tut-art tut-tabs">
         <span className="tut-circle on">
@@ -48,7 +48,7 @@ const CARDS: Card[] = [
     ),
   },
   {
-    title: '點一下，小人會先問你',
+    title: '完成任務後點一下，小狼會先問你',
     body: '確認之後才算完成，而且完成後不能取消。有次數的任務要點滿，有步驟的任務要逐項打勾。',
     art: () => (
       <div className="tut-art tut-stack">
@@ -69,7 +69,7 @@ const CARDS: Card[] = [
   },
   {
     title: '身份與技能',
-    body: '繪師、健身各是一個身份，有自己的小人、寄語和等級。任務可以指定給某個身份，完成時對應的技能也會一起升等。',
+    body: '不同目標的小狼各是一個身份，和不同目標的小狼一起努力升級吧。任務可以指定給某個小狼，完成時對應的技能也會一起升等。',
     art: () => (
       <div className="tut-art tut-chips">
         <span className="tut-pill on">繪師</span>
@@ -85,7 +85,7 @@ const CARDS: Card[] = [
   },
   {
     title: '事件、獎勵與徽章',
-    body: '每天開啟有機會遇到額外任務。當天的每日任務全部清空時，會播放你自己放的慶祝圖。累積的紀錄還會自動變成徽章，收在任務總覽的徽章櫃裡。',
+    body: '每天開啟有機會遇到小狼給你的額外任務。當天的每日任務全部清空時，小狼會一起來慶祝。累積的紀錄還會自動變成徽章，收在任務總覽的徽章櫃裡。',
     art: () => (
       <div className="tut-art tut-duo">
         <span className="tut-circle">
