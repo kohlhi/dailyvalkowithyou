@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { pendingEvent, useStore } from '../store'
 import { levelInfo, pick } from '../level'
+import { tapLine } from '../台詞'
 import { displayName, inherited, inheritedScene } from '../stage'
 import { useImageUrl } from '../images'
 import { sfx } from '../sound'
@@ -14,11 +15,12 @@ export function Home({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () 
   const event = pendingEvent(s)
   const scene = inheritedScene(me)
 
-  // 每次進首頁 / 切換身份都隨機抽一張角色圖與一句台詞，點角色可再抽
+  // 每次進首頁 / 切換身份都隨機抽一張角色圖與一句台詞（台詞來自 內容.ts），點角色可再抽
   const notes = inherited(me, 'notes')
   const images = inherited(me, 'images')
   const [imgId, setImgId] = useState<string | null>(() => pick(images) ?? null)
-  const [note, setNote] = useState<string | null>(() => pick(notes) ?? null)
+  // 點了才抽，免得還沒說出口就被記成「說過了」
+  const [note, setNote] = useState<string | null>(null)
   const [spin, setSpin] = useState(0)
   // 寄語預設不顯示，要點角色才會說話
   const [sayOpen, setSayOpen] = useState(false)
@@ -27,7 +29,7 @@ export function Home({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () 
 
   const reroll = () => {
     setImgId(pick(images) ?? null)
-    setNote(pick(notes) ?? null)
+    setNote(tapLine(me, notes))
     setSayOpen(true)
     setSpin((n) => n + 1)
     sfx.tap()

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Category, Task } from './types'
 import { actions, getState, greetDue, pendingEvent, tick, useStore } from './store'
+import { say } from './台詞'
 import type { TapResult } from './store'
 import { CATEGORY_LABEL, levelInfo, streakFrom } from './level'
 import { displayName } from './stage'
@@ -112,7 +113,8 @@ export default function App() {
 
   useEffect(() => {
     if (!toast) return
-    const id = setTimeout(() => setToast(null), 1400)
+    // 小狼說的話比較長，多留一點時間讀
+    const id = setTimeout(() => setToast(null), toast.msg.length > 12 ? 2400 : 1400)
     return () => clearTimeout(id)
   }, [toast])
 
@@ -151,7 +153,7 @@ export default function App() {
     }
     if (r.completed) {
       sfx.complete()
-      showToast(`+${r.exp} exp`)
+      showToast(say(me, '完成後', { exp: r.exp }) ?? `+${r.exp} exp`)
     } else if (r.advanced) {
       sfx.step()
     }

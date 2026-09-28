@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import type { Identity, Task } from '../types'
-import { pick } from '../level'
-import { displayName, inherited } from '../stage'
+import { getState } from '../store'
+import { displayName } from '../stage'
+import { openingLine } from '../台詞'
 import { FlameIcon } from '../Icons'
 import { Hero } from './Hero'
 
@@ -12,7 +14,7 @@ function timeHello(h: number): string {
   return '晚安'
 }
 
-/** 重新開啟 App 時，小人出來打個招呼並報今天的狀況 */
+/** 重新開啟 App 時，小狼出來打個招呼（依情境說話）並報今天的狀況 */
 export function Greeting({
   identity,
   tasks,
@@ -27,7 +29,8 @@ export function Greeting({
   const hello = timeHello(new Date().getHours())
   const daily = tasks.filter((t) => t.category === 'daily')
   const left = daily.filter((t) => !t.doneAt).length
-  const note = pick(inherited(identity, 'notes'))
+  // 開場只抽一次，重新渲染不會換句
+  const [line] = useState(() => openingLine(getState(), identity))
 
   let status: string
   if (daily.length === 0) status = '今天還沒有每日任務，先去加一個吧'
@@ -41,9 +44,7 @@ export function Greeting({
         <div className="confirm-top">
           <Hero identity={identity} className="confirm-hero" />
           <div className="confirm-say">
-            <p className="confirm-ask">
-              {hello}，{displayName(identity)}
-            </p>
+            <p className="confirm-ask">{line ?? `${hello}，${displayName(identity)}`}</p>
             <p className="confirm-note mono">{status}</p>
           </div>
         </div>
@@ -53,7 +54,6 @@ export function Greeting({
             <FlameIcon size={16} /> 連續 {streak} 天沒有斷過
           </div>
         )}
-        {note && <p className="greet-note">{note}</p>}
 
         <button className="pill wide" onClick={onClose}>
           出發

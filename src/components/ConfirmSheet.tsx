@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import type { Identity, Task } from '../types'
+import { say } from '../台詞'
 import { Hero } from './Hero'
 
 /** 等待確認的動作 */
@@ -10,34 +12,43 @@ interface Lines {
   yes: string
 }
 
-export function askText(p: Pending): Lines {
+/** 按鈕與小字維持固定寫法；問句交給小狼說（台詞在 內容.ts），沒有台詞時用原本的句子 */
+export function askText(p: Pending, identity: Identity): Lines {
+  const t = p.task
   if (p.kind === 'step') {
-    const step = p.task.steps[p.index] ?? ''
-    const left = p.task.stepsDone.filter((_, i) => i !== p.index && !p.task.stepsDone[i]).length
+    const step = t.steps[p.index] ?? ''
+    const left = t.stepsDone.filter((_, i) => i !== p.index && !t.stepsDone[i]).length
     if (left === 0) {
       return {
-        ask: `最後一個步驟了，「${p.task.title}」就此完成？`,
-        note: `完成後拿到 ${p.task.exp} exp，而且不能取消`,
+        ask: say(identity, '最後一步', { 任務: t.title, 步驟: step }) ?? `最後一個步驟了，「${t.title}」就此完成？`,
+        note: `完成後拿到 ${t.exp} exp，而且不能取消`,
         yes: '完成！',
       }
     }
-    return { ask: `步驟「${step}」完成了嗎？`, note: '打勾之後就不能取消了', yes: '打勾' }
+    return {
+      ask: say(identity, '步驟', { 任務: t.title, 步驟: step }) ?? `步驟「${step}」完成了嗎？`,
+      note: '打勾之後就不能取消了',
+      yes: '打勾',
+    }
   }
 
-  const t = p.task
   if (t.target > 1) {
     const next = t.progress + 1
     if (next < t.target) {
-      return { ask: `「${t.title}」要記上一次嗎？`, note: `記完會變成 ${next}/${t.target}`, yes: '記一次' }
+      return {
+        ask: say(identity, '記一次', { 任務: t.title, 次數: next, 還差: t.target - next }) ?? `「${t.title}」要記上一次嗎？`,
+        note: `記完會變成 ${next}/${t.target}`,
+        yes: '記一次',
+      }
     }
     return {
-      ask: `這是最後一次，「${t.title}」就完成了！`,
+      ask: say(identity, '最後一次', { 任務: t.title, 次數: next, 還差: 0 }) ?? `這是最後一次，「${t.title}」就完成了！`,
       note: `完成後拿到 ${t.exp} exp，而且不能取消`,
       yes: '完成！',
     }
   }
   return {
-    ask: `「${t.title}」確定完成了嗎？`,
+    ask: say(identity, '確認', { 任務: t.title, exp: t.exp }) ?? `「${t.title}」確定完成了嗎？`,
     note: `完成後拿到 ${t.exp} exp，而且不能取消`,
     yes: '完成了！',
   }
@@ -54,7 +65,8 @@ export function ConfirmSheet({
   onYes: () => void
   onNo: () => void
 }) {
-  const { ask, note, yes } = askText(pending)
+  // 問句只抽一次，重新渲染不會換句
+  const [{ ask, note, yes }] = useState(() => askText(pending, identity))
   return (
     <div className="backdrop" onClick={onNo}>
       <div className="modal confirm" onClick={(e) => e.stopPropagation()}>

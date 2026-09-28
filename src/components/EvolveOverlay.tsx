@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import type { Identity } from '../types'
+import { evolveLine } from '../台詞'
 import { levelInfo } from '../level'
 import { currentStage, stageIndex } from '../stage'
 import { Sparkle } from '../Icons'
@@ -9,6 +11,7 @@ export function EvolveOverlay({ identity, onClose }: { identity: Identity; onClo
   const stage = currentStage(identity)
   const idx = stageIndex(identity)
   const prev = identity.stages[idx - 1]
+  const [line] = useState(() => evolveLine(identity))
 
   return (
     <div className="evolve" onClick={onClose}>
@@ -28,6 +31,7 @@ export function EvolveOverlay({ identity, onClose }: { identity: Identity; onClo
       <div className="ev-sub mono">
         lv. {levelInfo(identity.exp).level} · 第 {idx + 1} 階段
       </div>
+      {line && <p className="ev-say">{line}</p>}
       <div className="reward-tap mono">點一下關閉</div>
     </div>
   )
