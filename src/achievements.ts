@@ -3,6 +3,7 @@ import { levelFromExp, streakFrom } from './level'
 import { stageIndex } from './stage'
 import { 徽章 } from './內容'
 import type { 條件, 等第, 圖示 } from './內容'
+import { visibleIdentities } from './series'
 
 /** 徽章的圖與等第都定義在「內容.ts」，這裡轉出去給徽章元件用 */
 export type BadgeIcon = 圖示
@@ -72,7 +73,7 @@ const 量表: Record<條件, (s: State) => { now: number; note?: string }> = {
   接下事件: (s) => ({ now: s.stats.eventsAccepted }),
   完成事件: (s) => ({ now: s.stats.eventsDone }),
   稀有事件: (s) => ({ now: s.stats.rareDone }),
-  身份數量: (s) => ({ now: s.identities.length }),
+  身份數量: (s) => ({ now: visibleIdentities(s.identities).length }),
   凌晨完成: (s) => ({ now: s.stats.nightDone }),
   早晨完成: (s) => ({ now: s.stats.earlyDone }),
   單日完成: (s) => ({ now: bestDay(s) }),

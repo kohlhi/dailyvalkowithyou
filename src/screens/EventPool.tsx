@@ -4,6 +4,7 @@ import { actions, useStore } from '../store'
 import { EXP_OPTIONS } from '../level'
 import { displayName } from '../stage'
 import { CloseIcon, PlusIcon, TrashIcon } from '../Icons'
+import { visibleIdentities } from '../series'
 
 const EMPTY = { title: '', exp: 300, rare: false, identityId: null as string | null }
 
@@ -124,7 +125,7 @@ export function EventPool() {
               >
                 所有身份
               </button>
-              {s.identities.map((i) => (
+              {visibleIdentities(s.identities).map((i) => (
                 <button
                   key={i.id}
                   className={'seg-btn' + (draft.identityId === i.id ? ' on' : '')}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Category, Task } from './types'
 import { actions, getState, greetDue, pendingEvent, tick, useStore } from './store'
 import { say } from './台詞'
+import { visibleIdentities } from './series'
 import type { TapResult } from './store'
 import { CATEGORY_LABEL, levelInfo, streakFrom } from './level'
 import { displayName } from './stage'
@@ -301,7 +302,7 @@ export default function App() {
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2 className="block-title">身份轉換</h2>
             <ul className="identity-pick">
-              {s.identities.map((i) => (
+              {visibleIdentities(s.identities).map((i) => (
                 <li key={i.id}>
                   <button
                     className={'pick' + (i.id === s.currentIdentityId ? ' on' : '')}

@@ -230,7 +230,7 @@ export function IdentityEditor({
         </div>
       </section>
 
-      {s.identities.length > 1 && (
+      {s.identities.length > 1 && !me?.role && (
         <section className="block">
           <button className="ghost danger" onClick={removeIdentity}>
             <TrashIcon size={18} /> 刪除這個身份

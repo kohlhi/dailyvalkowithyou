@@ -4,15 +4,16 @@ import { dayKey, levelFromExp, periodKeyFor, seeded, uid } from './level'
 import { DEFAULT_STAGE_LEVELS, allImageIds, makeStage, sortStages, stageIndex } from './stage'
 import { emptyStats, newlyUnlocked } from './achievements'
 import { APP } from './appConfig'
-import { blobToDataUrl, builtinId, dataUrlToBlob, listImages, putImage } from './images'
-import { 預設任務, 預設事件, 預設身份 } from './內容'
-import type { 分類, 身份內容 } from './內容'
+import { blobToDataUrl, dataUrlToBlob, listImages, putImage } from './images'
+import { 預設任務, 預設事件 } from './內容'
+import type { 分類 } from './內容'
+import { isVisible, starterIdentities, syncSeries } from './series'
 
 const KEY = 'daily-quest-v1'
 /** 讀不開的資料會原封不動搬到這裡，不直接丟掉，之後才有機會救回來 */
 const KEY_BROKEN = 'daily-quest-v1-broken'
 /** 目前的資料格式版本，只在這裡改一次 */
-const VERSION = 7
+const VERSION = 8
 
 /** 每天遇到事件的機率 */
 const EVENT_CHANCE = 0.7
@@ -76,22 +77,22 @@ function markReached(identity: Identity): Identity {
   return { ...identity, evolvedIds: identity.stages.slice(0, idx + 1).map((s) => s.id) }
 }
 
-function makeIdentity(preset: 身份內容): Identity {
-  const stages = DEFAULT_STAGE_LEVELS.map((lv, i) => makeStage(preset.階段名[i] ?? `第 ${i + 1} 階`, lv))
-  stages[0].notes = preset.寄語
-  stages[0].scene = preset.場景
-  if (preset.圖) stages[0].images = [builtinId(preset.圖)]
-  return {
-    id: uid(),
-    exp: 0,
-    skills: preset.技能.map((name) => ({ id: uid(), name, exp: 0 })),
-    stages,
-    evolvedIds: [stages[0].id],
-  }
+/** 使用者自建的身份（沒有對應的小狼系列） */
+function customIdentity(name: string): Identity {
+  const stages = DEFAULT_STAGE_LEVELS.map((lv) => makeStage(name, lv))
+  return { id: uid(), role: null, exp: 0, skills: [], stages, evolvedIds: [stages[0].id] }
+}
+
+/** 目前身份被隱藏（例如系列還沒開放）時，換到第一個看得到的 */
+function visibleCurrent(identities: Identity[], current: string): string {
+  const cur = identities.find((i) => i.id === current)
+  if (cur && isVisible(cur)) return current
+  return (identities.find(isVisible) ?? identities[0]).id
 }
 
 function defaultState(): State {
-  const identities = 預設身份.map(makeIdentity)
+  const starters = starterIdentities()
+  const identities = starters.length > 0 ? starters : [customIdentity('小狼')]
   return {
     version: VERSION,
     name: APP.defaultUserName,
@@ -162,6 +163,7 @@ function upgradeIdentity(raw: Partial<Identity> & Record<string, unknown>): Iden
 
   const identity: Identity = {
     id,
+    role: typeof raw.role === 'string' ? raw.role : null,
     exp,
     skills,
     stages,
@@ -181,7 +183,8 @@ function normalize(raw: unknown): State | null {
   if (!(v >= 1)) return null
   if (!Array.isArray(r.identities) || !Array.isArray(r.tasks) || r.identities.length === 0) return null
 
-  const identities = (r.identities as Record<string, unknown>[]).map(upgradeIdentity)
+  // v8：身份對應到 內容.ts 的小狼系列，稱號、圖、場景每次載入都重新套上
+  const identities = syncSeries((r.identities as Record<string, unknown>[]).map(upgradeIdentity))
   const tasks: Task[] = (r.tasks as Partial<Task>[]).map((t) => {
     const steps = Array.isArray(t.steps) ? t.steps : []
     return {
@@ -224,7 +227,7 @@ function normalize(raw: unknown): State | null {
     version: VERSION,
     name: String(r.name ?? APP.defaultUserName),
     identities,
-    currentIdentityId: ids.has(String(r.currentIdentityId)) ? String(r.currentIdentityId) : identities[0].id,
+    currentIdentityId: visibleCurrent(identities, ids.has(String(r.currentIdentityId)) ? String(r.currentIdentityId) : identities[0].id),
     tasks,
     logs: Array.isArray(r.logs) ? (r.logs as Log[]) : [],
     prefs,
@@ -308,11 +311,13 @@ function load(): State {
 
 let state: State = load()
 
-// 舊格式升級後立刻寫回，否則每次開啟都會重新產生一組階段 id
+// 舊格式升級、或 內容.ts 的小狼系列有更新時立刻寫回，
+// 否則新補上的小狼每次開啟都會拿到不同的 id
 try {
   const stored = localStorage.getItem(KEY)
-  if (!stored || Number(JSON.parse(stored).version) !== VERSION) {
-    localStorage.setItem(KEY, JSON.stringify(state))
+  const fresh = JSON.stringify(state)
+  if (stored !== fresh) {
+    localStorage.setItem(KEY, fresh)
   }
 } catch (e) {
   console.error('persist upgrade failed', e)
@@ -519,12 +524,12 @@ export const actions = {
 
   // ---- 身份 ----
   addIdentity(name: string): string {
-    const stages = DEFAULT_STAGE_LEVELS.map((lv) => makeStage(name, lv))
-    const id = uid()
+    const identity = customIdentity(name)
+    const id = identity.id
     update((s) => {
       const next: State = {
         ...s,
-        identities: [...s.identities, { id, exp: 0, skills: [], stages, evolvedIds: [stages[0].id] }],
+        identities: [...s.identities, identity],
       }
       const fresh = newlyUnlocked(next)
       return fresh.length > 0 ? { ...next, unlocked: [...next.unlocked, ...fresh] } : next
@@ -532,7 +537,8 @@ export const actions = {
     return id
   },
   deleteIdentity(id: string) {
-    if (state.identities.length <= 1) return
+    // 小狼系列不能刪，刪了下次載入也會再補回來（而且等級歸零）
+    if (state.identities.length <= 1 || state.identities.find((i) => i.id === id)?.role) return
     update((s) => {
       const identities = s.identities.filter((i) => i.id !== id)
       const tasks = s.tasks.map((t) => (t.identityId === id ? { ...t, identityId: null, skillId: null } : t))

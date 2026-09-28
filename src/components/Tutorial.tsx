@@ -98,14 +98,14 @@ const CARDS: Card[] = [
     ),
   },
   {
-    title: '身份與技能',
-    body: '不同目標的小狼各是一個身份，和不同目標的小狼一起努力升級吧。任務可以指定給某個小狼，完成時對應的技能也會一起升等。',
+    title: '小狼系列與技能',
+    body: '每個系列的小狼都會各自升級、各自進化，之後的更新還會有新的系列加入。完成任務時，對應的技能也會一起升等。',
     art: () => (
       <div className="tut-art tut-chips">
         <Wolf className="small" />
         <div className="tut-row">
           <span className="tut-pill on">假裝在讀書的狼</span>
-          <span className="tut-pill">抖著拿啞鈴的狼</span>
+          <span className="tut-pill">敬請期待…</span>
         </div>
         <div className="tut-row">
           <span className="tut-chip">

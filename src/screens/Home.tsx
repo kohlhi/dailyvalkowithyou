@@ -7,6 +7,7 @@ import { useImageUrl } from '../images'
 import { sfx } from '../sound'
 import { DefaultHero, DiceIcon, Sparkle } from '../Icons'
 import { StageSheet } from '../components/StageSheet'
+import { visibleIdentities } from '../series'
 
 export function Home({
   intro,
@@ -107,11 +108,14 @@ export function Home({
         </button>
       )}
 
-      <button className="pill" onClick={onSwitch}>
-        <Sparkle size={16} />
-        <span>身份轉換</span>
-        <Sparkle size={16} />
-      </button>
+      {/* 只有一隻小狼時沒得換，按鈕先藏起來；新系列上架後會自動出現 */}
+      {visibleIdentities(s.identities).length > 1 && (
+        <button className="pill" onClick={onSwitch}>
+          <Sparkle size={16} />
+          <span>身份轉換</span>
+          <Sparkle size={16} />
+        </button>
+      )}
 
       {stagesOpen && <StageSheet identity={me} onClose={() => setStagesOpen(false)} />}
     </div>

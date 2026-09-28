@@ -4,6 +4,7 @@ import { actions, useStore } from '../store'
 import { levelInfo } from '../level'
 import { allImageIds, displayName } from '../stage'
 import { sfx } from '../sound'
+import { visibleIdentities } from '../series'
 import {
   BookIcon,
   ChevronIcon,
@@ -153,7 +154,7 @@ export function Settings({
       {open === 'identity' && (
         <div className="pref-body">
           <ul className="line-list">
-            {s.identities.map((i) => (
+            {visibleIdentities(s.identities).map((i) => (
               <li key={i.id} className={i.id === s.currentIdentityId ? 'current' : ''}>
                 <span className="grow">{displayName(i)}</span>
                 <span className="mono small">

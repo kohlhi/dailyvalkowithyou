@@ -8,7 +8,7 @@
  * 最近說過的台詞跟番茄鐘一樣自己存一個 localStorage key，
  * 不進 store、不動 VERSION、不進備份 JSON。清掉也只是可能又聽到一樣的話。
  */
-import { 角色台詞, 預設身份, type 台詞條件, type 台詞組, type 情境台詞, type 清單進度台詞 } from './內容'
+import { 角色台詞, type 台詞條件, type 台詞組, type 情境台詞, type 清單進度台詞 } from './內容'
 import type { Category, Identity, State } from './types'
 
 type 清單名 = '每日' | '每週' | '成就'
@@ -24,10 +24,9 @@ type 變數 = Record<string, string | number>
 
 // ── 認出是哪一隻狼 ──
 
-/** 用第一階段的稱號比對預設身份；對不到（使用者自建的身份）就回傳 null */
+/** 身份對應的小狼系列代號；使用者自建的身份是 null */
 export function roleOf(identity: Identity): string | null {
-  const first = identity.stages[0]?.name
-  return 預設身份.find((p) => p.階段名[0] === first)?.角色 ?? null
+  return identity.role
 }
 
 function tablesFor(identity: Identity) {

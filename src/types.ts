@@ -27,6 +27,8 @@ export interface Stage {
 /** 身份（繪師、健身…），各自累積 exp 與等級 */
 export interface Identity {
   id: string
+  /** 對應 內容.ts「小狼系列」的角色代號；null 是使用者自建的身份 */
+  role: string | null
   exp: number
   skills: Skill[]
   /** 依 fromLevel 由小到大排序，至少有一個從 lv.1 開始 */
@@ -130,7 +132,7 @@ export interface Unlocked {
 }
 
 export interface State {
-  version: 7
+  version: 8
   name: string
   identities: Identity[]
   currentIdentityId: string

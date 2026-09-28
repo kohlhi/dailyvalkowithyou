@@ -4,6 +4,7 @@ import { actions, useStore } from '../store'
 import { CATEGORY_LABEL, EXP_OPTIONS } from '../level'
 import { displayName } from '../stage'
 import { CloseIcon, MinusIcon, PlusIcon, TrashIcon } from '../Icons'
+import { visibleIdentities } from '../series'
 
 const CATS: Category[] = ['daily', 'weekly', 'achievement']
 const MAX_STEPS = 12
@@ -102,7 +103,7 @@ export function TaskForm({ task, category, onDone }: { task?: Task; category: Ca
             <button className={'seg-btn' + (identityId === null ? ' on' : '')} onClick={() => chooseIdentity(null)}>
               所有身份
             </button>
-            {s.identities.map((i) => (
+            {visibleIdentities(s.identities).map((i) => (
               <button
                 key={i.id}
                 className={'seg-btn' + (identityId === i.id ? ' on' : '')}
