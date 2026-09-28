@@ -3691,3 +3691,9 @@ body::before {
   letter-spacing: 0.18em;
   color: var(--muted);
 }
+
+/* 角色台詞：升級畫面的小狼台詞沿用進化的對話框 */
+.lu-say {
+  margin-top: 22px;
+  animation-delay: 0.35s;
+}

@@ -8,8 +8,10 @@
  * 最近說過的台詞跟番茄鐘一樣自己存一個 localStorage key，
  * 不進 store、不動 VERSION、不進備份 JSON。清掉也只是可能又聽到一樣的話。
  */
-import { 角色台詞, 預設身份, type 台詞條件, type 台詞組, type 情境台詞 } from './內容'
-import type { Identity, State } from './types'
+import { 角色台詞, 預設身份, type 台詞條件, type 台詞組, type 情境台詞, type 清單進度台詞 } from './內容'
+import type { Category, Identity, State } from './types'
+
+type 清單名 = '每日' | '每週' | '成就'
 import { dayKey, levelFromExp, streakFrom } from './level'
 import { displayName, stageIndex } from './stage'
 
@@ -17,7 +19,7 @@ const KEY = 'valko-lines-v1'
 /** 階段台詞每一句被抽到的機會是一般台詞的幾倍 */
 const STAGE_WEIGHT = 2
 
-type 清單類別 = Exclude<keyof 台詞組, '開場'>
+type 清單類別 = Exclude<keyof 台詞組, '開場' | '清單底部'>
 type 變數 = Record<string, string | number>
 
 // ── 認出是哪一隻狼 ──
@@ -37,12 +39,14 @@ function tablesFor(identity: Identity) {
   }
 }
 
+const filled = <T>(v: T[] | undefined): v is T[] => Array.isArray(v) && v.length > 0
+
 /** 這一階有寫就用這一階，沒寫就往前找最近一個有寫的階段 */
-function stageLayer<K extends keyof 台詞組>(identity: Identity, key: K): 台詞組[K] | undefined {
+function stageLayer<T>(identity: Identity, get: (g: 台詞組) => T[] | undefined): T[] | undefined {
   const stages = tablesFor(identity).wolf.階段 ?? []
   for (let i = stageIndex(identity); i >= 0; i--) {
-    const v = stages[i]?.[key]
-    if (Array.isArray(v) && v.length > 0) return v
+    const v = stages[i] ? get(stages[i]) : undefined
+    if (filled(v)) return v
   }
   return undefined
 }
@@ -99,13 +103,29 @@ function fill(line: string, vars: 變數): string {
 
 // ── 一般類別：點小狼、確認、完成後… ──
 
-export function say(identity: Identity, kind: 清單類別, vars: 變數 = {}): string | null {
+/** 依「這一階 → 往前的階段 → 整隻狼 → 共用」找到台詞並抽一句 */
+function speak(identity: Identity, key: string, get: (g: 台詞組) => string[] | undefined, vars: 變數) {
   const { role, wolf, common } = tablesFor(identity)
-  const own = wolf[kind]
-  const general = Array.isArray(own) && own.length > 0 ? own : common[kind]
-  const stage = stageLayer(identity, kind)
-  const line = draw(`${role}:${kind}`, stage as string[] | undefined, general as string[] | undefined)
-  return line === null ? null : fill(line, { 稱號: displayName(identity), ...vars })
+  const own = get(wolf)
+  const general = filled(own) ? own : get(common)
+  const line = draw(`${role}:${key}`, stageLayer(identity, get), general)
+  return line === null ? null : fill(line, { 稱號: displayName(identity), 等級: levelFromExp(identity.exp), ...vars })
+}
+
+export function say(identity: Identity, kind: 清單類別, vars: 變數 = {}): string | null {
+  return speak(identity, kind, (g) => g[kind], vars)
+}
+
+const LIST_NAME: Record<Category, 清單名> = { daily: '每日', weekly: '每週', achievement: '成就' }
+
+/** 任務清單底部那句話，依進度分成空的／沒開始／進行中／剩一個／全部完成 */
+export function footLine(identity: Identity, category: Category, done: number, total: number): string | null {
+  const left = total - done
+  const vars = { 完成: done, 剩下: left, 總數: total }
+  if (total === 0) return speak(identity, '清單底部:空的', (g) => g.清單底部?.空的, vars)
+  const state: keyof 清單進度台詞 = left === 0 ? '全部完成' : done === 0 ? '沒開始' : left === 1 ? '剩一個' : '進行中'
+  const list = LIST_NAME[category]
+  return speak(identity, `清單底部:${list}:${state}`, (g) => g.清單底部?.[list]?.[state], vars)
 }
 
 /** 點首頁小狼。使用者自建的身份沒有台詞表，改說他自己寫的寄語 */
@@ -209,7 +229,7 @@ function hello(h: number): string {
 export function openingLine(state: State, identity: Identity, now = new Date()): string | null {
   const { role, wolf, common } = tablesFor(identity)
   const base: 情境台詞[] = wolf.開場 && wolf.開場.length > 0 ? wolf.開場 : (common.開場 ?? [])
-  const stage = stageLayer(identity, '開場') ?? []
+  const stage = stageLayer(identity, (g) => g.開場) ?? []
 
   // 名字跟基本情境一樣的，是替那個情境加台詞；不一樣的是這一階才有的新情境，優先檢查
   const names = new Set(base.map((e) => e.情境))

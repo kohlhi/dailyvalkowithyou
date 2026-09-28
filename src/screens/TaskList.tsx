@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Category, Task } from '../types'
 import { actions, useStore } from '../store'
 import type { TapResult } from '../store'
 import type { Pending } from '../components/ConfirmSheet'
 import { ConfirmSheet } from '../components/ConfirmSheet'
 import { 清單角色圖 } from '../內容'
+import { footLine } from '../台詞'
 import { CheckIcon, DiceIcon, PencilIcon, PlusIcon, Sparkle, StepIcon, TrashIcon } from '../Icons'
 
-/** 清單底部小人說的話，依進度改變 */
-function footLine(category: Category, done: number, total: number): string {
+/** 清單底部小狼沒有台詞時的備用句子（台詞在 內容.ts 的「清單底部」） */
+function plainFootLine(category: Category, done: number, total: number): string {
   if (total === 0) return '這裡還空空的，先新增一個任務吧'
   const left = total - done
   if (category === 'achievement') {
@@ -45,6 +46,12 @@ export function TaskList({
     (t) => t.category === category && (t.identityId === null || t.identityId === s.currentIdentityId),
   )
   const done = tasks.filter((t) => t.doneAt).length
+  // 進度有變才換一句，其他重新渲染維持同一句
+  const foot = useMemo(
+    () => (me ? footLine(me, category, done, tasks.length) : null) ?? plainFootLine(category, done, tasks.length),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [me?.id, category, done, tasks.length],
+  )
   const [burst, setBurst] = useState<string | null>(null)
   const [pending, setPending] = useState<Pending | null>(null)
 
@@ -89,7 +96,7 @@ export function TaskList({
       {me && (
         <div className="list-foot">
           <img className="foot-hero" src={清單角色圖} alt="" />
-          <p className="foot-say">{footLine(category, done, tasks.length)}</p>
+          <p className="foot-say">{foot}</p>
         </div>
       )}
 

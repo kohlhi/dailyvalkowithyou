@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { pendingEvent, useStore } from '../store'
 import { levelInfo, pick } from '../level'
 import { tapLine } from '../台詞'
@@ -8,7 +8,18 @@ import { sfx } from '../sound'
 import { DefaultHero, DiceIcon, Sparkle } from '../Icons'
 import { StageSheet } from '../components/StageSheet'
 
-export function Home({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () => void }) {
+export function Home({
+  intro,
+  onIntroSeen,
+  onSwitch,
+  onEvent,
+}: {
+  /** 剛切換到這隻狼時說的話，有的話一進來就先說 */
+  intro: string | null
+  onIntroSeen: () => void
+  onSwitch: () => void
+  onEvent: () => void
+}) {
   const s = useStore()
   const me = s.identities.find((i) => i.id === s.currentIdentityId) ?? s.identities[0]
   const info = levelInfo(me.exp)
@@ -20,12 +31,18 @@ export function Home({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () 
   const images = inherited(me, 'images')
   const [imgId, setImgId] = useState<string | null>(() => pick(images) ?? null)
   // 點了才抽，免得還沒說出口就被記成「說過了」
-  const [note, setNote] = useState<string | null>(null)
+  const [note, setNote] = useState<string | null>(intro)
   const [spin, setSpin] = useState(0)
   // 寄語預設不顯示，要點角色才會說話
-  const [sayOpen, setSayOpen] = useState(false)
+  const [sayOpen, setSayOpen] = useState(intro !== null)
   const [stagesOpen, setStagesOpen] = useState(false)
   const url = useImageUrl(imgId)
+
+  // 切換後的第一句只說一次，回到首頁不會再冒出來
+  useEffect(() => {
+    if (intro !== null) onIntroSeen()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const reroll = () => {
     setImgId(pick(images) ?? null)

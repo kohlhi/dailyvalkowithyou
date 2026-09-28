@@ -11,7 +11,17 @@ import { sfx } from '../sound'
  */
 const 頁籤 = ['主頁', '番茄鐘', '陪伴']
 
-export function HomePages({ onSwitch, onEvent }: { onSwitch: () => void; onEvent: () => void }) {
+export function HomePages({
+  intro,
+  onIntroSeen,
+  onSwitch,
+  onEvent,
+}: {
+  intro: string | null
+  onIntroSeen: () => void
+  onSwitch: () => void
+  onEvent: () => void
+}) {
   const 軌道 = useRef<HTMLDivElement>(null)
   const [page, setPage] = useState(0)
 
@@ -33,7 +43,7 @@ export function HomePages({ onSwitch, onEvent }: { onSwitch: () => void; onEvent
     <div className="home-pages">
       <div className="home-track" ref={軌道} onScroll={捲動時}>
         <div className="home-page">
-          <Home onSwitch={onSwitch} onEvent={onEvent} />
+          <Home intro={intro} onIntroSeen={onIntroSeen} onSwitch={onSwitch} onEvent={onEvent} />
         </div>
         <div className="home-page">
           <Pomodoro />

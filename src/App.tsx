@@ -7,7 +7,7 @@ import { CATEGORY_LABEL, levelInfo, streakFrom } from './level'
 import { displayName } from './stage'
 import { APP } from './appConfig'
 import { sfx } from './sound'
-import { BackIcon, CalendarIcon, GridIcon, SmileyIcon, Sparkle, StarIcon, TrophyIcon } from './Icons'
+import { BackIcon, CalendarIcon, GridIcon, SmileyIcon, StarIcon, TrophyIcon } from './Icons'
 import { HomePages } from './screens/HomePages'
 import { TaskList } from './screens/TaskList'
 import { TaskForm } from './screens/TaskForm'
@@ -20,6 +20,7 @@ import { RewardOverlay } from './components/RewardOverlay'
 import { Greeting } from './components/Greeting'
 import { Tutorial } from './components/Tutorial'
 import { EvolveOverlay } from './components/EvolveOverlay'
+import { LevelUpOverlay } from './components/LevelUpOverlay'
 import { BadgeOverlay } from './components/BadgeOverlay'
 import { Badges } from './screens/Badges'
 
@@ -71,6 +72,8 @@ export default function App() {
   const [toast, setToast] = useState<{ msg: string; key: number } | null>(null)
   const [queue, setQueue] = useState<Overlay[]>([])
   const [switching, setSwitching] = useState(false)
+  /** 剛切換過去的狼要說的第一句，首頁顯示一次就清掉 */
+  const [intro, setIntro] = useState<string | null>(null)
 
   sfx.enabled = s.prefs.sound
 
@@ -132,10 +135,10 @@ export default function App() {
     }
   }, [s.unlocked])
 
-  // 升級畫面輪到自己時才開始倒數
+  // 升級畫面輪到自己時才開始倒數，留時間讀小狼的話
   useEffect(() => {
     if (top?.kind !== 'levelup') return
-    const id = setTimeout(close, 2000)
+    const id = setTimeout(close, 3200)
     return () => clearTimeout(id)
   }, [top, close])
 
@@ -234,6 +237,8 @@ export default function App() {
           {screen.name === 'home' && (
             <HomePages
               key={s.currentIdentityId}
+              intro={intro}
+              onIntroSeen={() => setIntro(null)}
               onSwitch={() => setSwitching(true)}
               onEvent={() => push({ kind: 'event' })}
             />
@@ -301,6 +306,7 @@ export default function App() {
                   <button
                     className={'pick' + (i.id === s.currentIdentityId ? ' on' : '')}
                     onClick={() => {
+                      if (i.id !== s.currentIdentityId) setIntro(say(i, '切換'))
                       actions.setIdentity(i.id)
                       sfx.step()
                       setSwitching(false)
@@ -381,17 +387,7 @@ export default function App() {
 
       {top?.kind === 'badge' && <BadgeOverlay id={top.id} note={top.note} onClose={close} />}
 
-      {top?.kind === 'levelup' && (
-        <div className="levelup" onClick={close}>
-          <Sparkle size={44} className="lu-sp a" />
-          <Sparkle size={26} className="lu-sp b" />
-          <Sparkle size={36} className="lu-sp c" />
-          <Sparkle size={20} className="lu-sp d" />
-          <div className="lu-text">LEVEL UP</div>
-          <div className="lu-level mono">lv. {top.level}</div>
-          <div className="lu-name">{displayName(me)}</div>
-        </div>
-      )}
+      {top?.kind === 'levelup' && <LevelUpOverlay identity={me} level={top.level} onClose={close} />}
     </div>
   )
 }
