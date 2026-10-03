@@ -43,6 +43,7 @@ src/
   images.ts        IndexedDB 圖片 + 內建圖包
   sound.ts         Web Audio 合成音效
   focus.ts         番茄鐘狀態，獨立 localStorage key
+  tilt.ts          背景視差：滑鼠／陀螺儀、iPhone 權限、開關（獨立 localStorage key）
   ambience.ts      Web Audio 即時合成的環境音（雨／海浪／風／爐火）
   screens/         各個整頁畫面
   components/      彈窗與共用元件
@@ -85,10 +86,18 @@ Service Worker 會讓使用者先開到新版再被餵回舊版，擋掉就等�
 `endsAt - Date.now()` 重算。iOS 的 PWA 被切到背景常常整個重新載入，
 用累加的一定會算錯。回到前景時 `結算()` 會自動補算，離開超過一分鐘就不自動接休息。
 
-**首頁背景分層、雨用程式畫**：`內容.ts` 的場景可以寫成 `{ 房間, 窗外, 雨 }`，由下往上疊「窗外 → 雨 → 房間」。
-房間圖的窗戶玻璃是透明的，所以窗框、檯燈會自然擋住雨，不用另外畫遮罩；雨的 canvas 再拿窗外圖當
-CSS mask，房間外圍透明處才不會飄雨。雨在 `components/Scene.tsx`，看不到（滑到別頁、App 在背景）就停，
-關掉「動畫」或系統要求減少動態時畫一格靜止的雨。新場景請作者用同一張畫布、同尺寸匯出各層。
+**首頁背景是圖層清單、雨用程式畫**：`內容.ts` 的場景寫成 `{ 圖層: [...] }`，第一層在最底下並決定高度
+（舊的 `{ 房間, 窗外, 雨 }` 會被 `series.ts` 的 `toLayers()` 轉成兩層）。每層可設深度、放大、雨、混合模式、強度、閃爍。
+房間圖的窗戶玻璃是透明的，所以窗框、檯燈會自然擋住後面的層，不用另外畫遮罩；雨的 canvas 拿它所在那層的圖當
+CSS mask。雨在 `components/Scene.tsx`，看不到（滑到別頁、App 在背景）就停，關掉「動畫」或減少動態時畫一格靜止的雨。
+混合模式只跟背景混：`.scene` 有 `isolation: isolate`，不要拿掉，否則會跟頁面底色、小狼混在一起。
+
+**視差（tilt.ts）**：`useParallax()` 把傾斜量寫進 `.stage-view` 的 CSS 變數 `--px / --py`，
+各層用 `depthShift(深度)` 的 `translate: calc(...)` 自己乘，不經過 React 重新渲染。
+iPhone 讀陀螺儀要 `DeviceOrientationEvent.requestPermission()`，必須在點擊裡呼叫，所以陀螺儀預設關、
+設定頁打開開關時才要權限；Mac 的 Safari 也有這個函式，用 `maxTouchPoints > 0` 區分。滑鼠視差不用權限，
+沒被明確關掉就會動。開關存在 `valko-tilt-v1`，不進 store。頁面隱藏時瀏覽器不跑 requestAnimationFrame，
+在預覽面板被隱藏時測不出動態，這是正常的。
 
 **環境音不放音檔**：`ambience.ts` 用 OfflineAudioContext 離線算出無縫循環，
 編成 WAV 再交給 `<audio loop>` 播。0 KB、離線可用、沒有授權問題。

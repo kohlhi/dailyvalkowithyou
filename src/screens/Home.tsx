@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { pendingEvent, useStore } from '../store'
 import { levelInfo, pick } from '../level'
 import { tapLine } from '../台詞'
@@ -9,6 +9,7 @@ import { DefaultHero, DiceIcon, Sparkle } from '../Icons'
 import { StageSheet } from '../components/StageSheet'
 import { sceneLayers, visibleIdentities } from '../series'
 import { Scene } from '../components/Scene'
+import { depthShift, useParallax } from '../tilt'
 
 export function Home({
   intro,
@@ -39,6 +40,8 @@ export function Home({
   const [sayOpen, setSayOpen] = useState(intro !== null)
   const [stagesOpen, setStagesOpen] = useState(false)
   const url = useImageUrl(imgId)
+  const stageRef = useRef<HTMLDivElement>(null)
+  useParallax(stageRef, Boolean(scene) && s.prefs.animation)
 
   // 切換後的第一句只說一次，回到首頁不會再冒出來
   useEffect(() => {
@@ -56,10 +59,15 @@ export function Home({
 
   return (
     <div className="screen home">
-      <div className={'stage-view' + (scene ? '' : ' no-scene')}>
-        {scene && <Scene layers={scene} animate={s.prefs.animation} />}
+      <div ref={stageRef} className={'stage-view' + (scene ? '' : ' no-scene')}>
+        {scene && <Scene layers={scene.圖層} animate={s.prefs.animation} />}
 
-        <button className="valko" onClick={reroll} aria-label="點一下和牠說話">
+        <button
+          className="valko"
+          style={scene ? { translate: depthShift(scene.小狼深度) } : undefined}
+          onClick={reroll}
+          aria-label="點一下和牠說話"
+        >
           <span key={spin} className="valko-img pop-in">
             {url ? <img src={url} alt="" /> : <DefaultHero />}
           </span>

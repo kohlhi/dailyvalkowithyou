@@ -5,11 +5,13 @@ import { levelInfo } from '../level'
 import { allImageIds, displayName } from '../stage'
 import { sfx } from '../sound'
 import { visibleIdentities } from '../series'
+import { needsPermission, toggleTilt, useTiltEnabled } from '../tilt'
 import {
   BookIcon,
   ChevronIcon,
   DiceIcon,
   GiftIcon,
+  ImageIcon,
   MuteIcon,
   PencilIcon,
   PlusIcon,
@@ -44,6 +46,7 @@ export function Settings({
   onTutorial: () => void
 }) {
   const s = useStore()
+  const tilt = useTiltEnabled()
   const importRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState<Section | null>(null)
   const [newIdentity, setNewIdentity] = useState('')
@@ -138,6 +141,24 @@ export function Settings({
               </button>
             )
           })}
+          <button
+            className={'toggle' + (tilt ? ' on' : '')}
+            onClick={async () => {
+              const ok = await toggleTilt(!tilt)
+              if (!ok) onToast('沒有拿到權限，可以到 iPhone 的設定裡重新允許')
+              else if (s.prefs.sound) sfx.tap()
+            }}
+            aria-pressed={tilt}
+          >
+            <span className="toggle-label">
+              <ImageIcon size={20} />
+              <span className="toggle-text">
+                背景視差
+                <small className="mono">{needsPermission() ? '手機傾斜時背景跟著動，需要允許動作權限' : '手機傾斜或滑鼠移動時背景跟著動'}</small>
+              </span>
+            </span>
+            <span className="knob" />
+          </button>
           <button className="ghost" onClick={onEvents}>
             <DiceIcon size={18} /> 編輯每日事件池（{s.events.length}）
           </button>

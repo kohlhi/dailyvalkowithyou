@@ -2718,12 +2718,24 @@ button.manage-main {
   height: auto;
 }
 
-/* 分層場景：窗外與雨鋪滿底下，房間疊在最上面並決定高度 */
+/* 分層場景：第一層決定高度，其他層疊在上面；isolation 讓混合模式只跟背景混，不碰到小狼與文字 */
 .scene {
+  position: relative;
+  isolation: isolate;
+}
+
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--k, 1);
+  will-change: translate;
+}
+
+.scene-layer.base {
   position: relative;
 }
 
-.scene-layer,
 .scene-rain {
   position: absolute;
   inset: 0;
@@ -2732,8 +2744,21 @@ button.manage-main {
   pointer-events: none;
 }
 
-.scene .scene-room {
-  position: relative;
+/* 燈泡電壓不穩：大部分時間穩定，偶爾暗一下、閃兩下，週期刻意不整齊 */
+.scene-layer.flicker {
+  animation: flicker 7.3s infinite steps(1, end);
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: var(--k, 1); }
+  41% { opacity: calc(var(--k, 1) * 0.86); }
+  42% { opacity: var(--k, 1); }
+  67% { opacity: calc(var(--k, 1) * 0.55); }
+  68% { opacity: calc(var(--k, 1) * 0.95); }
+  69.5% { opacity: calc(var(--k, 1) * 0.62); }
+  71% { opacity: var(--k, 1); }
+  88% { opacity: calc(var(--k, 1) * 0.9); }
+  90% { opacity: var(--k, 1); }
 }
 
 .valko {

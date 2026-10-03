@@ -1,17 +1,42 @@
-import { useEffect, useRef } from 'react'
-import type { 場景內容 } from '../內容'
+import { useEffect, useRef, type CSSProperties } from 'react'
+import type { 圖層內容, 混合模式 } from '../內容'
+import { depthShift } from '../tilt'
+
+const BLEND: Record<混合模式, CSSProperties['mixBlendMode']> = {
+  一般: 'normal',
+  濾色: 'screen',
+  加亮顏色: 'color-dodge',
+  加算: 'plus-lighter',
+  變亮: 'lighten',
+  覆蓋: 'overlay',
+  柔光: 'soft-light',
+  色彩增值: 'multiply',
+}
 
 /**
- * 首頁背景：窗外 → 雨 → 房間，由下往上疊。
- * 房間圖的窗戶是透明的，所以窗框、檯燈會自然擋在雨前面；
- * 雨再用窗外那張圖當遮罩，房間外圍透明的地方也不會飄雨。
+ * 首頁背景：圖層由下往上疊，第一層在最底下並決定整個場景的高度。
+ * 房間圖的窗戶是透明的，所以窗框、檯燈會自然擋在窗外與雨的前面；
+ * 雨用它所在那層的圖當遮罩，房間外圍透明的地方也不會飄雨。
+ * 視差靠外層容器的 --px / --py（見 tilt.ts），每層依自己的深度乘上去。
  */
-export function Scene({ layers, animate }: { layers: 場景內容; animate: boolean }) {
+export function Scene({ layers, animate }: { layers: 圖層內容[]; animate: boolean }) {
   return (
     <div className="scene">
-      {layers.窗外 && <img className="scene-layer" src={layers.窗外} alt="" />}
-      {layers.窗外 && layers.雨 && <Rain mask={layers.窗外} animate={animate} />}
-      <img className="scene-room" src={layers.房間} alt="" />
+      {layers.map((l, i) => {
+        const style: CSSProperties = {
+          translate: depthShift(l.深度 ?? 0),
+          scale: l.放大 && l.放大 !== 1 ? String(l.放大) : undefined,
+          mixBlendMode: l.模式 ? BLEND[l.模式] : undefined,
+          ['--k' as string]: String(l.強度 ?? 1),
+        }
+        const cls = 'scene-layer' + (i === 0 ? ' base' : '') + (l.閃爍 && animate ? ' flicker' : '')
+        return (
+          <div key={l.圖 + i} className={cls} style={style}>
+            <img src={l.圖} alt="" />
+            {l.雨 && <Rain mask={l.圖} animate={animate} />}
+          </div>
+        )
+      })}
     </div>
   )
 }
