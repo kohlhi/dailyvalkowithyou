@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { pendingEvent, useStore } from '../store'
 import { levelInfo, pick } from '../level'
 import { tapLine } from '../台詞'
-import { displayName, inherited, inheritedScene } from '../stage'
+import { displayName, inherited } from '../stage'
 import { useImageUrl } from '../images'
 import { sfx } from '../sound'
 import { DefaultHero, DiceIcon, Sparkle } from '../Icons'
 import { StageSheet } from '../components/StageSheet'
-import { visibleIdentities } from '../series'
+import { sceneLayers, visibleIdentities } from '../series'
+import { Scene } from '../components/Scene'
 
 export function Home({
   intro,
@@ -25,7 +26,7 @@ export function Home({
   const me = s.identities.find((i) => i.id === s.currentIdentityId) ?? s.identities[0]
   const info = levelInfo(me.exp)
   const event = pendingEvent(s)
-  const scene = inheritedScene(me)
+  const scene = sceneLayers(me)
 
   // 每次進首頁 / 切換身份都隨機抽一張角色圖與一句台詞（台詞來自 內容.ts），點角色可再抽
   const notes = inherited(me, 'notes')
@@ -56,11 +57,7 @@ export function Home({
   return (
     <div className="screen home">
       <div className={'stage-view' + (scene ? '' : ' no-scene')}>
-        {scene && (
-          <div className="scene">
-            <img src={scene} alt="" />
-          </div>
-        )}
+        {scene && <Scene layers={scene} animate={s.prefs.animation} />}
 
         <button className="valko" onClick={reroll} aria-label="點一下和牠說話">
           <span key={spin} className="valko-img pop-in">

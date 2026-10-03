@@ -2718,6 +2718,24 @@ button.manage-main {
   height: auto;
 }
 
+/* 分層場景：窗外與雨鋪滿底下，房間疊在最上面並決定高度 */
+.scene {
+  position: relative;
+}
+
+.scene-layer,
+.scene-rain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.scene .scene-room {
+  position: relative;
+}
+
 .valko {
   position: absolute;
   right: -1%;

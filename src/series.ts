@@ -5,9 +5,9 @@
  * 使用者存檔只保留自己的進度（經驗值、技能等級、看過哪些進化、自己放的獎勵圖）。
  * 所以作者改了 內容.ts，所有人下次打開就會看到，也不用為了換圖升資料版本。
  */
-import { 小狼系列, type 系列內容 } from './內容'
+import { 小狼系列, type 場景內容, type 系列內容 } from './內容'
 import type { Identity, Stage } from './types'
-import { DEFAULT_STAGE_LEVELS } from './stage'
+import { DEFAULT_STAGE_LEVELS, inheritedScene, stageIndex } from './stage'
 import { builtinId } from './images'
 import { uid } from './level'
 
@@ -61,7 +61,7 @@ function applySeries(identity: Identity, x: 系列內容): Identity {
     images: (st.圖 ?? []).map(builtinId),
     rewards: identity.stages[i]?.rewards ?? [],
     notes: identity.stages[i]?.notes ?? [],
-    scene: st.場景 ?? '',
+    scene: typeof st.場景 === 'string' ? st.場景 : (st.場景?.房間 ?? ''),
   }))
   reached.add(0)
   const known = new Set(identity.skills.map((k) => k.name))
@@ -108,6 +108,23 @@ export function syncSeries(identities: Identity[]): Identity[] {
     if (x.開放 && !used.has(x.角色)) out.push(newSeriesIdentity(x))
   }
   return out
+}
+
+/**
+ * 首頁背景的各圖層。系列身份讀 內容.ts（沒寫就往前一階找），
+ * 自建身份只有存檔裡的一張圖。
+ */
+export function sceneLayers(identity: Identity): 場景內容 | null {
+  const x = seriesOf(identity)
+  if (x) {
+    for (let i = Math.min(stageIndex(identity), x.階段.length - 1); i >= 0; i--) {
+      const sc = x.階段[i]?.場景
+      if (!sc) continue
+      return typeof sc === 'string' ? { 房間: sc } : sc
+    }
+  }
+  const flat = inheritedScene(identity)
+  return flat ? { 房間: flat } : null
 }
 
 /** 新使用者一開始擁有的小狼：所有開放中的系列 */
