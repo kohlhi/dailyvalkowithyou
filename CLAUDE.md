@@ -43,6 +43,7 @@ src/
   images.ts        IndexedDB 圖片 + 內建圖包
   sound.ts         Web Audio 合成音效
   focus.ts         番茄鐘狀態，獨立 localStorage key
+  notes.ts         記事本（便條紙），獨立 localStorage key
   tilt.ts          背景視差：滑鼠／陀螺儀、iPhone 權限、開關（獨立 localStorage key）
   ambience.ts      Web Audio 即時合成的環境音（雨／海浪／風／爐火）
   screens/         各個整頁畫面
@@ -81,6 +82,8 @@ Service Worker 會讓使用者先開到新版再被餵回舊版，擋掉就等�
 **番茄鐘刻意不進 store**：它不給 EXP、不算 RPG 資料、也不進備份 JSON，
 所以 `focus.ts` 自己存 `valko-focus-v1`，完全不碰 `VERSION` 與升級路徑。
 要加新功能前先想想能不能也這樣切開，能切就不要動使用者的任務資料。
+記事本（`notes.ts`，`valko-notes-v1`）也是這樣切開的，目前**不在備份 JSON 裡**。
+首頁是四頁橫向滑動：記事本／主頁／番茄鐘／陪伴，`HomePages` 掛載時先捲到主頁（index 1）。
 
 **倒數用時間戳，不要用計數器**：`focus.ts` 存的是 `endsAt`，畫面每次都用
 `endsAt - Date.now()` 重算。iOS 的 PWA 被切到背景常常整個重新載入，

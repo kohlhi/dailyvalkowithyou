@@ -3740,3 +3740,144 @@ body::before {
   margin-top: 22px;
   animation-delay: 0.35s;
 }
+
+/* ---------- 記事本（便條紙） ---------- */
+.notes-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 6px;
+}
+
+.notes-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notes-count {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.notes-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 12px;
+  align-items: start;
+}
+
+/* 便條紙：紙白底、上面一條半透明膠帶，每張歪一點點 */
+.note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 16px 12px 8px;
+  background: var(--sheet);
+  color: var(--on-sheet);
+  border-radius: 3px 4px 14px 3px / 3px 3px 10px 4px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.32);
+}
+
+.note-tape {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 46px;
+  height: 16px;
+  translate: -50% 0;
+  rotate: -3deg;
+  background: rgba(243, 238, 228, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+}
+
+.note-text {
+  width: 100%;
+  min-height: 3.2em;
+  resize: none;
+  overflow: hidden;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  padding: 0;
+}
+
+.note-text::placeholder {
+  color: rgba(30, 42, 55, 0.4);
+}
+
+.note-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+  min-height: 26px;
+}
+
+.note-time {
+  font-size: 10px;
+  opacity: 0.55;
+}
+
+.note-del {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 6px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.55;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.note-del.armed {
+  opacity: 1;
+  background: var(--on-sheet);
+  color: var(--sheet);
+}
+
+.notes-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 160px;
+  border: 2px dashed var(--line);
+  border-radius: 18px 16px 20px 15px / 15px 20px 16px 18px;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.notes-page .focus-foot {
+  margin-top: auto;
+}

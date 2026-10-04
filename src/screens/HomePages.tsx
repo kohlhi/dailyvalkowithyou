@@ -1,15 +1,18 @@
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Home } from './Home'
 import { Pomodoro } from './Pomodoro'
 import { Lofi } from './Lofi'
+import { Notes } from './Notes'
 import { sfx } from '../sound'
 
 /**
- * 首頁其實是三頁，左右滑動切換。
+ * 首頁其實是四頁，左右滑動切換：記事本在主頁左邊，番茄鐘、陪伴在右邊。
+ * 打開時停在主頁，所以一開始要先把軌道捲到第二頁。
  * 底部分頁列管的是「日 / 週 / 成就」，跟這裡是兩個不同的方向，
  * 所以下面放了有字的切換列，不用只靠小圓點讓人猜。
  */
-const 頁籤 = ['主頁', '番茄鐘', '陪伴']
+const 頁籤 = ['記事本', '主頁', '番茄鐘', '陪伴']
+const 主頁 = 1
 
 export function HomePages({
   intro,
@@ -23,7 +26,13 @@ export function HomePages({
   onEvent: () => void
 }) {
   const 軌道 = useRef<HTMLDivElement>(null)
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(主頁)
+
+  // 畫面畫出來之前就捲到主頁，不然會先閃一下記事本
+  useLayoutEffect(() => {
+    const el = 軌道.current
+    if (el) el.scrollLeft = 主頁 * el.clientWidth
+  }, [])
 
   const 捲動時 = () => {
     const el = 軌道.current
@@ -42,6 +51,9 @@ export function HomePages({
   return (
     <div className="home-pages">
       <div className="home-track" ref={軌道} onScroll={捲動時}>
+        <div className="home-page">
+          <Notes />
+        </div>
         <div className="home-page">
           <Home intro={intro} onIntroSeen={onIntroSeen} onSwitch={onSwitch} onEvent={onEvent} />
         </div>
