@@ -162,11 +162,14 @@ function Rain({ mask, animate }: { mask: string; animate: boolean }) {
     }
   }, [animate])
 
+  // 遮罩要跟圖層一樣用 cover 裁切，不然滿版之後雨會落在圖的外面
   const maskStyle = {
     WebkitMaskImage: `url(${mask})`,
     maskImage: `url(${mask})`,
-    WebkitMaskSize: '100% 100%',
-    maskSize: '100% 100%',
+    WebkitMaskSize: 'cover',
+    maskSize: 'cover',
+    WebkitMaskPosition: '50% 42%',
+    maskPosition: '50% 42%',
   }
   return <canvas ref={ref} className="scene-rain" style={maskStyle} aria-hidden="true" />
 }

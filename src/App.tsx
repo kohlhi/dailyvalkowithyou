@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Category, Task } from './types'
 import { actions, getState, greetDue, pendingEvent, tick, useStore } from './store'
 import { say } from './台詞'
-import { visibleIdentities } from './series'
+import { sceneLayers, visibleIdentities } from './series'
+import { Scene } from './components/Scene'
+import { useParallax } from './tilt'
 import type { TapResult } from './store'
 import { CATEGORY_LABEL, levelInfo, streakFrom } from './level'
 import { displayName } from './stage'
@@ -73,6 +75,9 @@ export default function App() {
   const [toast, setToast] = useState<{ msg: string; key: number } | null>(null)
   const [queue, setQueue] = useState<Overlay[]>([])
   const [switching, setSwitching] = useState(false)
+  /** 首頁左右滑到第幾頁（1 是主頁），用來決定背景要不要淡掉 */
+  const [homePage, setHomePage] = useState(1)
+  const appRef = useRef<HTMLDivElement>(null)
   /** 剛切換過去的狼要說的第一句，首頁顯示一次就清掉 */
   const [intro, setIntro] = useState<string | null>(null)
 
@@ -169,6 +174,9 @@ export default function App() {
   }
 
   const me = s.identities.find((i) => i.id === s.currentIdentityId) ?? s.identities[0]
+  const scene = me ? sceneLayers(me) : null
+  // 視差的 --px/--py 寫在 .app，滿版背景與小狼都讀得到同一組
+  useParallax(appRef, Boolean(scene) && screen.name === 'home' && s.prefs.animation)
   const isRoot = screen.name === 'home' || screen.name === 'tasks'
   const event = pendingEvent(s)
   const goBack = () => {
@@ -208,7 +216,14 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <div className="app" ref={appRef}>
+      {/* 背景滿版鋪在整個畫面後面（含 header 與分頁列），再壓一層漸層讓下方的字讀得到 */}
+      {scene && screen.name === 'home' && (
+        <div className={'scene-bg' + (homePage === 1 ? '' : ' aside')}>
+          <Scene layers={scene.圖層} animate={s.prefs.animation} />
+        </div>
+      )}
+
       <header className="header">
         {isRoot ? (
           <button className="icon-btn" aria-label="任務總覽" onClick={() => go({ name: 'overview' })}>
@@ -237,6 +252,7 @@ export default function App() {
         <div className="screen-anim" key={screenKey(screen)}>
           {screen.name === 'home' && (
             <HomePages
+              onPage={setHomePage}
               key={s.currentIdentityId}
               intro={intro}
               onIntroSeen={() => setIntro(null)}

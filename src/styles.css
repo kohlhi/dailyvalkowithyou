@@ -807,10 +807,11 @@ button:active:not(:disabled) {
   animation: screen-in 0.22s ease-out;
 }
 
+/* 只動 opacity：transform 會建立新的定位基準，讓滿版背景的 fixed 失效 */
 @keyframes screen-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: none;
   }
   to {
     opacity: 1;
@@ -2696,32 +2697,52 @@ button.manage-main {
 }
 
 /* ---------- 首頁：場景與角色 ---------- */
+/* 場景搬去當滿版背景之後，這裡只負責擺小狼、對話泡泡與稱號 */
 .stage-view {
   position: relative;
+  flex: 1;
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto 2px;
+  min-height: 0;
+  margin: 0;
 }
 
 .stage-view.no-scene {
   aspect-ratio: 1 / 0.9;
 }
 
-/* 場景圖自己決定高度，小狼與稱號再疊上去 */
-.scene {
-  width: 100%;
+/* ---------- 滿版背景 ---------- */
+/* 鋪滿整個畫面，壓在 header 與分頁列後面。isolation 讓混合模式只在背景裡作用，不會吃到 UI */
+.scene-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
 }
 
+/* 滑到記事本／番茄鐘／陪伴時把背景壓暗，那些頁的字才讀得清楚 */
+.scene-bg.aside {
+  opacity: 0.3;
+}
+
+.scene-bg,
+.scene-bg .scene {
+  transition: opacity 0.3s ease;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+}
+
+/* 圖片用 cover 填滿，寧可裁切也不要留白邊 */
 .scene img {
   display: block;
   width: 100%;
-  height: auto;
-}
-
-/* 分層場景：第一層決定高度，其他層疊在上面；isolation 讓混合模式只跟背景混，不碰到小狼與文字 */
-.scene {
-  position: relative;
-  isolation: isolate;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
 }
 
 .scene-layer {
@@ -2732,8 +2753,35 @@ button.manage-main {
   will-change: translate;
 }
 
+/* 滿版之後每層都是絕對定位，第一層不再需要撐高度 */
 .scene-layer.base {
+  position: absolute;
+}
+
+/* 下方壓一層漸層，讓稱號、經驗條、分頁圖示浮得出來 */
+.scene-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11, 22, 28, 0.5) 0%,
+      rgba(11, 22, 28, 0.1) 11%,
+      rgba(11, 22, 28, 0) 34%,
+      rgba(11, 22, 28, 0.28) 66%,
+      rgba(11, 22, 28, 0.62) 84%,
+      rgba(11, 22, 28, 0.86) 100%
+    );
+}
+
+/* UI 一律壓在背景上面 */
+.app > .header,
+.app > .main,
+.app > .tabbar {
   position: relative;
+  z-index: 1;
 }
 
 .scene-rain {
@@ -2742,6 +2790,11 @@ button.manage-main {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  /* 遮罩跟著圖一起 cover，不然雨會跑到圖外面 */
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: 50% 42%;
+  mask-position: 50% 42%;
 }
 
 /* 燈泡電壓不穩：大部分時間穩定，偶爾暗一下、閃兩下，週期刻意不整齊 */

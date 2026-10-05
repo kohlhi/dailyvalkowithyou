@@ -95,6 +95,18 @@ Service Worker 會讓使用者先開到新版再被餵回舊版，擋掉就等�
 CSS mask。雨在 `components/Scene.tsx`，看不到（滑到別頁、App 在背景）就停，關掉「動畫」或減少動態時畫一格靜止的雨。
 混合模式只跟背景混：`.scene` 有 `isolation: isolate`，不要拿掉，否則會跟頁面底色、小狼混在一起。
 
+**首頁背景是滿版的，畫在 `App.tsx` 不在 `Home.tsx`**：`.scene-bg` 是 `position: fixed` 鋪滿整個視窗，
+壓在 header 與分頁列後面，所以必須掛在 `.app` 底下 —— 放進 `.main` 的話會蓋到 header。
+`.scene-bg::after` 是下方的漸層，讓稱號、經驗條、分頁圖示讀得到。
+滑到記事本／番茄鐘／陪伴時加 `.aside` 把背景壓到 0.3，那些頁的字才清楚。
+
+**`screen-in` 動畫只能動 opacity，不要加回 transform**：有 transform 的祖先會變成定位基準，
+讓滿版背景的 `position: fixed` 失效（會縮到 `.main` 的大小再跳回去）。
+
+**CSS 沒有「線性光源」**：繪圖軟體的 Linear Light / 線性加亮在 CSS 的 `mix-blend-mode` 裡不存在。
+燈光那層用 `加算`（`plus-lighter`），那就是線性相加，等同繪圖軟體的「線性加亮（增加）」，
+對透明底的光暈圖來說效果一樣。不要去找 `linear-light`，寫了會被當成無效值整個忽略。
+
 **視差（tilt.ts）**：`useParallax()` 把傾斜量寫進 `.stage-view` 的 CSS 變數 `--px / --py`，
 各層用 `depthShift(深度)` 的 `translate: calc(...)` 自己乘，不經過 React 重新渲染。
 iPhone 讀陀螺儀要 `DeviceOrientationEvent.requestPermission()`，必須在點擊裡呼叫，所以陀螺儀預設關、

@@ -171,10 +171,18 @@ export const 小狼系列: 系列內容[] = [
         稱號: '假裝在讀書的狼',
         圖: ['/heroes/valko-study-1.webp'],
         場景: {
+          // 由遠到近六層。全部同一張畫布匯出，所以可以直接疊不用對位。
+          // 深度差距拉開，傾斜手機時才看得出前後。
           圖層: [
-            { 圖: '/scenes/study/sky-night.webp', 深度: 1, 放大: 1.04, 雨: true },
-            { 圖: '/scenes/study/room.webp', 深度: 0.35 },
+            { 圖: '/scenes/study/sky.webp', 深度: 1, 放大: 1.08, 雨: true },
+            { 圖: '/scenes/study/room.webp', 深度: 0.4, 放大: 1.04 },
+            // 窗光：加算＝繪圖軟體的「線性加亮」，光會疊上去而不是蓋掉後面
+            { 圖: '/scenes/study/glow.webp', 深度: 0.4, 放大: 1.04, 模式: '加算', 強度: 0.9, 閃爍: true },
+            { 圖: '/scenes/study/desk.webp', 深度: 0.15, 放大: 1.02 },
+            { 圖: '/scenes/study/lamp.webp', 深度: 0.15, 放大: 1.02, 閃爍: true },
+            { 圖: '/scenes/study/ivy.webp', 深度: -0.35, 放大: 1.05 },
           ],
+          小狼深度: -0.5,
         },
       },
       { 稱號: '筆記成山的狼' },

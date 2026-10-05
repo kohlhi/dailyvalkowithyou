@@ -19,11 +19,14 @@ export function HomePages({
   onIntroSeen,
   onSwitch,
   onEvent,
+  onPage,
 }: {
   intro: string | null
   onIntroSeen: () => void
   onSwitch: () => void
   onEvent: () => void
+  /** 滑到第幾頁，讓 App 決定背景要不要淡掉 */
+  onPage: (i: number) => void
 }) {
   const 軌道 = useRef<HTMLDivElement>(null)
   const [page, setPage] = useState(主頁)
@@ -37,8 +40,9 @@ export function HomePages({
   const 捲動時 = () => {
     const el = 軌道.current
     if (!el || el.clientWidth === 0) return
-    const i = Math.round(el.scrollLeft / el.clientWidth)
-    setPage(Math.max(0, Math.min(頁籤.length - 1, i)))
+    const i = Math.max(0, Math.min(頁籤.length - 1, Math.round(el.scrollLeft / el.clientWidth)))
+    setPage(i)
+    onPage(i)
   }
 
   const 跳到 = (i: number) => {
