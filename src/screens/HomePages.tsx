@@ -69,13 +69,14 @@ export function HomePages({
         </div>
       </div>
 
-      <div className="home-tabs" role="tablist">
+      {/* 分頁列刻意不顯示：首頁要乾淨，左右滑還是換得了頁，當作沒說的小驚喜。
+          無障礙的使用者還是要有辦法到得了，所以留一排看不見但讀得到的按鈕。 */}
+      <div className="home-tabs-hidden" role="tablist" aria-label="首頁的其他頁">
         {頁籤.map((n, i) => (
           <button
             key={n}
             role="tab"
             aria-selected={i === page}
-            className={'home-tab' + (i === page ? ' on' : '')}
             onClick={() => 跳到(i)}
           >
             {n}

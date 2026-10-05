@@ -173,14 +173,16 @@ export const 小狼系列: 系列內容[] = [
         場景: {
           // 由遠到近六層。全部同一張畫布匯出，所以可以直接疊不用對位。
           // 深度差距拉開，傾斜手機時才看得出前後。
+          // 不要給各層不同的「放大」：六層是同一張畫布，倍率不一樣就會互相錯開
+          // （書會從窗台浮起來）。移動時露邊是靠整個場景容器畫大一圈解決的。
           圖層: [
-            { 圖: '/scenes/study/sky.webp', 深度: 1, 放大: 1.08, 雨: true },
-            { 圖: '/scenes/study/room.webp', 深度: 0.4, 放大: 1.04 },
+            { 圖: '/scenes/study/sky.webp', 深度: 1, 雨: true },
+            { 圖: '/scenes/study/room.webp', 深度: 0.4 },
             // 窗光：加算＝繪圖軟體的「線性加亮」，光會疊上去而不是蓋掉後面
-            { 圖: '/scenes/study/glow.webp', 深度: 0.4, 放大: 1.04, 模式: '加算', 強度: 0.9, 閃爍: true },
-            { 圖: '/scenes/study/desk.webp', 深度: 0.15, 放大: 1.02 },
-            { 圖: '/scenes/study/lamp.webp', 深度: 0.15, 放大: 1.02, 閃爍: true },
-            { 圖: '/scenes/study/ivy.webp', 深度: -0.35, 放大: 1.05 },
+            { 圖: '/scenes/study/glow.webp', 深度: 0.4, 模式: '加算', 強度: 0.9, 閃爍: true },
+            { 圖: '/scenes/study/desk.webp', 深度: 0.15 },
+            { 圖: '/scenes/study/lamp.webp', 深度: 0.15, 閃爍: true },
+            { 圖: '/scenes/study/ivy.webp', 深度: -0.35 },
           ],
           小狼深度: -0.5,
         },

@@ -2731,9 +2731,11 @@ button.manage-main {
   transition: opacity 0.3s ease;
 }
 
+/* 比畫面大一圈：視差最多移動約 12px，留 24px 四周才不會晃出白邊。
+   注意是整個容器一起放大，不是各層分別放大 —— 各層倍率不同會互相錯開。 */
 .scene {
   position: absolute;
-  inset: 0;
+  inset: -24px;
 }
 
 /* 圖片用 cover 填滿，寧可裁切也不要留白邊 */
@@ -2742,7 +2744,8 @@ button.manage-main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 42%;
+  /* 重點放在窗戶與檯燈那一帶，底下的桌子交給漸層蓋掉 */
+  object-position: 50% 36%;
 }
 
 .scene-layer {
@@ -2793,8 +2796,8 @@ button.manage-main {
   /* 遮罩跟著圖一起 cover，不然雨會跑到圖外面 */
   -webkit-mask-size: cover;
   mask-size: cover;
-  -webkit-mask-position: 50% 42%;
-  mask-position: 50% 42%;
+  -webkit-mask-position: 50% 36%;
+  mask-position: 50% 36%;
 }
 
 /* 燈泡電壓不穩：大部分時間穩定，偶爾暗一下、閃兩下，週期刻意不整齊 */
@@ -3933,4 +3936,14 @@ body::before {
 
 .notes-page .focus-foot {
   margin-top: auto;
+}
+
+/* 首頁分頁列不露臉：左右滑就能換頁，但螢幕閱讀器與鍵盤仍然到得了 */
+.home-tabs-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

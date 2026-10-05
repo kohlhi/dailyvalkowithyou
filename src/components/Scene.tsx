@@ -168,8 +168,8 @@ function Rain({ mask, animate }: { mask: string; animate: boolean }) {
     maskImage: `url(${mask})`,
     WebkitMaskSize: 'cover',
     maskSize: 'cover',
-    WebkitMaskPosition: '50% 42%',
-    maskPosition: '50% 42%',
+    WebkitMaskPosition: '50% 36%',
+    maskPosition: '50% 36%',
   }
   return <canvas ref={ref} className="scene-rain" style={maskStyle} aria-hidden="true" />
 }
