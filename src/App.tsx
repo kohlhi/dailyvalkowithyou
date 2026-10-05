@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import type { Category, Task } from './types'
 import { actions, getState, greetDue, pendingEvent, tick, useStore } from './store'
 import { say } from './台詞'
 import { sceneLayers, visibleIdentities } from './series'
+import { 首頁外觀 } from './內容'
 import { Scene } from './components/Scene'
 import { useParallax } from './tilt'
 import type { TapResult } from './store'
@@ -216,7 +218,22 @@ export default function App() {
   }
 
   return (
-    <div className="app" ref={appRef}>
+    <div
+      className="app"
+      ref={appRef}
+      // 首頁外觀的設定（內容.ts）變成 CSS 變數，樣式表直接讀
+      style={
+        {
+          '--scene-focus': 首頁外觀.裁切位置,
+          '--scene-dim-top': String(首頁外觀.上方暗度),
+          '--scene-dim-bottom': String(首頁外觀.下方暗度),
+          '--valko-size': 首頁外觀.小狼大小 + '%',
+          '--valko-right': 首頁外觀.小狼靠右 + '%',
+          '--valko-bottom': 首頁外觀.小狼靠下 + '%',
+          '--class-name-size': 首頁外觀.稱號字級 + 'px',
+        } as CSSProperties
+      }
+    >
       {/* 背景滿版鋪在整個畫面後面（含 header 與分頁列），再壓一層漸層讓下方的字讀得到 */}
       {scene && screen.name === 'home' && (
         <div className={'scene-bg' + (homePage === 1 ? '' : ' aside')}>

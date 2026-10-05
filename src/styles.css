@@ -2744,8 +2744,8 @@ button.manage-main {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* 重點放在窗戶與檯燈那一帶，底下的桌子交給漸層蓋掉 */
-  object-position: 50% 36%;
+  /* 看到哪一塊由 內容.ts 的「首頁外觀.裁切位置」決定 */
+  object-position: var(--scene-focus, 50% 36%);
 }
 
 .scene-layer {
@@ -2767,15 +2767,16 @@ button.manage-main {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* 深淺由 內容.ts 的「首頁外觀.上方暗度 / 下方暗度」決定，中間各段按比例跟著走 */
   background:
     linear-gradient(
       180deg,
-      rgba(11, 22, 28, 0.5) 0%,
-      rgba(11, 22, 28, 0.1) 11%,
+      rgba(11, 22, 28, calc(var(--scene-dim-top, 0.5) * 1)) 0%,
+      rgba(11, 22, 28, calc(var(--scene-dim-top, 0.5) * 0.2)) 11%,
       rgba(11, 22, 28, 0) 34%,
-      rgba(11, 22, 28, 0.28) 66%,
-      rgba(11, 22, 28, 0.62) 84%,
-      rgba(11, 22, 28, 0.86) 100%
+      rgba(11, 22, 28, calc(var(--scene-dim-bottom, 0.86) * 0.33)) 66%,
+      rgba(11, 22, 28, calc(var(--scene-dim-bottom, 0.86) * 0.72)) 84%,
+      rgba(11, 22, 28, calc(var(--scene-dim-bottom, 0.86) * 1)) 100%
     );
 }
 
@@ -2817,11 +2818,12 @@ button.manage-main {
   90% { opacity: var(--k, 1); }
 }
 
+/* 大小與位置由 內容.ts 的「首頁外觀」決定 */
 .valko {
   position: absolute;
-  right: -1%;
-  bottom: -5%;
-  width: 50%;
+  right: var(--valko-right, -1%);
+  bottom: var(--valko-bottom, -2%);
+  width: var(--valko-size, 50%);
   padding: 0;
   background: none;
   z-index: 2;
@@ -2897,7 +2899,7 @@ button.manage-main {
 }
 
 .stage-view .identity-info .class-name {
-  font-size: 25px;
+  font-size: var(--class-name-size, 25px);
   line-height: 1.12;
 }
 
@@ -3203,9 +3205,6 @@ button.manage-main {
   padding-bottom: 6px;
 }
 
-.valko {
-  bottom: -2%;
-}
 
 /* ---------- 漸層底下的表面 ---------- */
 /* 深色彈出面板用實心底，壓在漸層任何一段上都清楚 */
