@@ -3999,9 +3999,16 @@ body::before {
   display: none;
 }
 
-/* ---------- 右上角：笑臉（使用者資訊）＋下方的小齒輪（設定） ---------- */
-.header {
-  position: relative;
+/* ---------- 右上角：笑臉（使用者資訊）＋下方的齒輪（設定） ---------- */
+/* 標題列要壓在主內容上面：齒輪浮在標題列下方，被 .main 蓋住的話會點不到 */
+.app > .header {
+  z-index: 3;
+}
+
+/* 上方三顆按鈕都不要框，只留圖示 */
+.header .icon-btn {
+  border: 0;
+  background: none;
 }
 
 .header-right {
@@ -4010,49 +4017,22 @@ body::before {
   height: 48px;
 }
 
-/* 齒輪浮在笑臉正下方，不佔標題列的高度 */
+/* 齒輪跟笑臉一樣大，浮在笑臉正下方，不撐高標題列 */
 .header-right .gear {
   position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  translate: -50% 0;
-  z-index: 5;
-  background: rgba(14, 37, 55, 0.72);
-  border-color: var(--line);
+  top: calc(100% + 6px);
+  left: 0;
+  width: 48px;
+  height: 48px;
   color: var(--ink);
 }
 
 .header-right .gear[aria-pressed='true'] {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--ink);
+  color: var(--accent);
 }
 
-/* ---------- 使用者資訊：目前身份卡 ---------- */
-.profile-me {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin: 4px 0 4px;
+/* 首頁以外的畫面內容從齒輪下方開始，免得齒輪蓋住任務卡片右邊的按鈕 */
+.app:not(.at-home) > .main {
+  padding-top: 50px;
 }
 
-.profile-me-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.profile-me-name {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.profile-me-lv {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.profile-me .bar {
-  margin-top: 8px;
-}

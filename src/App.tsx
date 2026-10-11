@@ -275,12 +275,12 @@ export default function App() {
             <SmileyIcon size={36} />
           </button>
           <button
-            className="icon-btn small gear"
+            className="icon-btn gear"
             aria-label="設定"
             aria-pressed={screen.name === 'settings'}
             onClick={() => go(screen.name === 'settings' ? { name: 'home' } : { name: 'settings' })}
           >
-            <GearIcon size={20} />
+            <GearIcon size={34} />
           </button>
         </div>
       </header>

@@ -13,7 +13,7 @@ const MAX_IDENTITIES = 5
 
 /**
  * 右上角笑臉：使用者資訊。
- * 名字、目前的身份與等級、連續天數、今日／本週完成、徽章櫃、最近完成，都是「關於這個人」的東西，
+ * 名字、連續天數、今日／本週完成、徽章櫃、最近完成，都是「關於這個人」的東西，
  * 所以從任務總覽搬過來，任務總覽只管任務本身。
  */
 export function Profile({
@@ -26,9 +26,6 @@ export function Profile({
   const s = useStore()
   const [identityOpen, setIdentityOpen] = useState(false)
   const [newIdentity, setNewIdentity] = useState('')
-
-  const me = s.identities.find((i) => i.id === s.currentIdentityId) ?? s.identities[0]
-  const info = levelInfo(me.exp)
 
   const today = dayKey()
   const week = weekKey()
@@ -58,21 +55,6 @@ export function Profile({
         placeholder="輸入一個名字"
         onChange={(e) => actions.setName(e.target.value)}
       />
-
-      {/* 目前的身份：稱號、等級、經驗條 */}
-      <div className="profile-me">
-        <div className="profile-me-top">
-          <span className="profile-me-name">{displayName(me)}</span>
-          <span className="mono profile-me-lv">lv.{info.level}</span>
-        </div>
-        <div className="bar" role="progressbar" aria-valuenow={me.exp} aria-valuemin={info.start} aria-valuemax={info.next}>
-          <div className="bar-fill" style={{ width: `${Math.max(2, Math.round(info.ratio * 100))}%` }} />
-        </div>
-        <div className="bar-labels mono">
-          <span>{me.exp} EXP</span>
-          <span>{info.next} EXP</span>
-        </div>
-      </div>
 
       <div className="streak-card">
         <FlameIcon size={26} />
