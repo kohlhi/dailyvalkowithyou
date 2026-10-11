@@ -167,6 +167,10 @@ iOS 把 `<audio>` 當成媒體播放才會在背景繼續。**已在 iPhone 實�
 
 ## iOS 限制
 
+- **狀態列是透明的**（`index.html` 的 `apple-mobile-web-app-status-bar-style` 是 `black-translucent`）：
+  背景畫到瀏海兩側，時間與電池是白字，所以每個畫面最上方都要夠暗（首頁靠 `.scene-bg::after` 的上方漸層）。
+  內容要避開狀態列就用 `env(safe-area-inset-top)`，`.app` 已經加了。**這個設定是加到主畫面那一刻就存下來的，
+  改了之後已安裝的使用者要刪掉重新加到主畫面才會生效**；Safari 瀏覽器裡看不到這個效果。
 - **不支援震動**，`navigator.vibrate` 在 Safari 無效，不要再加震動回饋
 - 剪影是把圖片壓成純黑，**背景不透明的圖會變黑方塊**，圖包請用去背的 png / gif
 - 網頁 App 被切到背景後常常整個重新載入，所以「開啟時問候」有四小時冷卻

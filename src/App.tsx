@@ -312,7 +312,8 @@ export default function App() {
         </div>
       </main>
 
-      {isRoot && (
+      {/* 記事本、番茄鐘、陪伴頁不顯示任務按鈕，留給那幾頁更多空間 */}
+      {isRoot && !(screen.name === 'home' && homePage !== 1) && (
         <nav className="tabbar">
           {TABS.map(({ category, Icon, label }) => {
             const active = screen.name === 'tasks' && screen.category === category

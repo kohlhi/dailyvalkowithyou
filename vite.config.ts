@@ -28,8 +28,9 @@ export default defineConfig({
         short_name: APP.shortName,
         description: APP.description,
         lang: 'zh-Hant',
-        theme_color: '#f6f3ee',
-        background_color: '#f6f3ee',
+        // 跟背景漸層最上面的顏色一樣，開啟畫面與狀態列才不會閃一塊米白色
+        theme_color: '#1b2c2f',
+        background_color: '#1b2c2f',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
