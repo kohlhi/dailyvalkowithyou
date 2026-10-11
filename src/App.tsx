@@ -219,7 +219,7 @@ export default function App() {
 
   return (
     <div
-      className="app"
+      className={'app' + (screen.name === 'home' ? ' at-home' : '')}
       ref={appRef}
       // 首頁外觀的設定（內容.ts）變成 CSS 變數，樣式表直接讀
       style={
@@ -233,6 +233,7 @@ export default function App() {
           '--valko-right': String(首頁外觀.小狼靠右),
           '--valko-bottom': 首頁外觀.小狼靠下 + '%',
           '--class-name-size': 首頁外觀.稱號字級 + 'px',
+          '--bubble-at': String(首頁外觀.對話框高度),
         } as CSSProperties
       }
     >

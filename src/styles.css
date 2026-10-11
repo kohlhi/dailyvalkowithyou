@@ -2881,11 +2881,12 @@ button.manage-main {
 }
 
 /* 泡泡貼在小狼頭頂上方，尾巴指向牠 */
+/* 對話框跟著小狼：小狼圖的高度是寬度的 1250/900 倍，乘上「首頁外觀.對話框高度」就是對話框的底 */
 .stage-view .bubble.say {
   position: absolute;
   left: auto;
   right: 2%;
-  bottom: 60%;
+  bottom: calc(var(--valko-bottom, 0%) + var(--W) * var(--valko-size, 50) / 100 * 1.389 * var(--bubble-at, 0.9));
   top: auto;
   z-index: 3;
   max-width: 56%;
@@ -3972,4 +3973,30 @@ body::before {
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+/* ---------- 首頁一頁放得下，不用上下滑 ----------
+   首頁時 App 固定一個螢幕高。各層預設的 min-height:auto 會被四頁裡最高的那頁（番茄鐘）撐開，
+   整頁就超出螢幕要往下滑，所以一路設成 0；側頁太高時在自己那頁裡捲。 */
+.app.at-home {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.app.at-home > .main,
+.app.at-home .screen-anim,
+.app.at-home .home-pages,
+.app.at-home .home-track {
+  min-height: 0;
+}
+
+.app.at-home .home-page {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.app.at-home .home-page::-webkit-scrollbar {
+  display: none;
 }
