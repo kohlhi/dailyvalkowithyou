@@ -224,13 +224,13 @@ export default function App() {
       // 首頁外觀的設定（內容.ts）變成 CSS 變數，樣式表直接讀
       style={
         {
-          '--scene-focus': 首頁外觀.裁切位置,
-          '--scene-zoom': String(首頁外觀.放大),
-          '--scene-up': String(首頁外觀.上移),
+          '--bg-width': String(首頁外觀.背景寬度),
+          '--bg-left': String(首頁外觀.背景左移),
+          '--bg-up': String(首頁外觀.背景上移),
           '--scene-dim-top': String(首頁外觀.上方暗度),
           '--scene-dim-bottom': String(首頁外觀.下方暗度),
-          '--valko-size': 首頁外觀.小狼大小 + '%',
-          '--valko-right': 首頁外觀.小狼靠右 + '%',
+          '--valko-size': String(首頁外觀.小狼大小),
+          '--valko-right': String(首頁外觀.小狼靠右),
           '--valko-bottom': 首頁外觀.小狼靠下 + '%',
           '--class-name-size': 首頁外觀.稱號字級 + 'px',
         } as CSSProperties
