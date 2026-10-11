@@ -148,6 +148,10 @@ iOS 把 `<audio>` 當成媒體播放才會在背景繼續。**已在 iPhone 實�
 長期成就一律讀 `state.stats` 裡的獨立累計欄位（`taskCounts`、`dayCounts`、`goalDays` 等）。
 連續天數用 `streakFrom(Object.keys(stats.dayCounts))`，不要用 logs。
 
+**右上角兩顆、左上角一顆**：笑臉是「使用者資訊」（`Profile.tsx`：名字、目前身份、連續天數、今日／本週完成、
+徽章櫃、身份清單、最近完成）；笑臉下面浮著的小齒輪是「設定」（`Settings.tsx`：回饋與功能、教學、資料、安裝）；
+左上角是「任務總覽」（`Overview.tsx`），只放任務清單本身，不要再把統計塞回去。
+
 **彈窗一律走佇列**：教學、問候、事件、獎勵圖、升級、進化、徽章都塞進 `App.tsx` 的 `queue`，
 一次只顯示最前面那個。新增任何全螢幕效果都往佇列丟，不要自己開一個 state，否則會互相蓋住。
 徽章比較特別，是用 effect 監看 `state.unlocked` 長度自動排隊，所以任何來源解鎖都會跳。
@@ -210,8 +214,8 @@ iOS 把 `<audio>` 當成媒體播放才會在背景繼續。**已在 iPhone 實�
 | 要關的 | 位置 |
 |---|---|
 | 編輯每日事件池 | `Settings.tsx` 的 `onEvents` 那顆 ghost 鈕 |
-| 編輯身份（鉛筆） | `Settings.tsx` `aria-label="編輯身份"` |
-| 新增身份＋輸入框 | `Settings.tsx` `aria-label="新增身份"`、`MAX_IDENTITIES` |
+| 編輯身份（鉛筆） | `Profile.tsx` `aria-label="編輯身份"` |
+| 新增身份＋輸入框 | `Profile.tsx` `aria-label="新增身份"`、`MAX_IDENTITIES` |
 | 上傳角色圖片 | `IdentityEditor.tsx` 的 `type="file"` |
 
 **不要關錯：`Settings.tsx` 裡另一個 `type="file"` 是「匯入備份」，那要留著**，

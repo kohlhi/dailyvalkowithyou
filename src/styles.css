@@ -3998,3 +3998,61 @@ body::before {
 .app.at-home .home-page::-webkit-scrollbar {
   display: none;
 }
+
+/* ---------- 右上角：笑臉（使用者資訊）＋下方的小齒輪（設定） ---------- */
+.header {
+  position: relative;
+}
+
+.header-right {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+/* 齒輪浮在笑臉正下方，不佔標題列的高度 */
+.header-right .gear {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 5;
+  background: rgba(14, 37, 55, 0.72);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.header-right .gear[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* ---------- 使用者資訊：目前身份卡 ---------- */
+.profile-me {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0 4px;
+}
+
+.profile-me-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.profile-me-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.profile-me-lv {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.profile-me .bar {
+  margin-top: 8px;
+}

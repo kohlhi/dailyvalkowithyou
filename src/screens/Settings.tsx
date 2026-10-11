@@ -1,10 +1,7 @@
 import { useRef, useState } from 'react'
 import type { Prefs } from '../types'
 import { actions, useStore } from '../store'
-import { levelInfo } from '../level'
-import { allImageIds, displayName } from '../stage'
 import { sfx } from '../sound'
-import { visibleIdentities } from '../series'
 import { needsPermission, toggleTilt, useTiltEnabled } from '../tilt'
 import {
   BookIcon,
@@ -13,8 +10,6 @@ import {
   GiftIcon,
   ImageIcon,
   MuteIcon,
-  PencilIcon,
-  PlusIcon,
   SmileyIcon,
   SoundIcon,
   SparkleIcon,
@@ -29,19 +24,15 @@ const FEEDBACK: { key: keyof Prefs; label: string; hint: string; Icon: typeof So
   { key: 'reward', label: '每日達成獎勵圖', hint: '當日每日任務全完成時播放', Icon: GiftIcon },
 ]
 
-/** 一個身份最多幾種，企劃表定的 */
-const MAX_IDENTITIES = 5
+type Section = 'feedback' | 'data' | 'install'
 
-type Section = 'feedback' | 'identity' | 'data' | 'install'
-
+/** 右上角齒輪：設定。回饋與功能、教學、資料、安裝說明；名字與身份在笑臉的「使用者資訊」 */
 export function Settings({
   onToast,
-  onEditIdentity,
   onEvents,
   onTutorial,
 }: {
   onToast: (m: string) => void
-  onEditIdentity: (id: string) => void
   onEvents: () => void
   onTutorial: () => void
 }) {
@@ -49,7 +40,6 @@ export function Settings({
   const tilt = useTiltEnabled()
   const importRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState<Section | null>(null)
-  const [newIdentity, setNewIdentity] = useState('')
   const [busy, setBusy] = useState(false)
 
   const toggleSection = (k: Section) => {
@@ -57,13 +47,7 @@ export function Settings({
     setOpen((o) => (o === k ? null : k))
   }
 
-  const addIdentity = () => {
-    const n = newIdentity.trim()
-    if (!n || s.identities.length >= MAX_IDENTITIES) return
-    const id = actions.addIdentity(n)
-    setNewIdentity('')
-    onEditIdentity(id)
-  }
+
 
   const togglePref = (key: keyof Prefs) => {
     const next = !s.prefs[key]
@@ -101,16 +85,6 @@ export function Settings({
 
   return (
     <div className="screen settings pref">
-      <div className="pref-row static">
-        <span className="pref-label">使用者名</span>
-      </div>
-      <input
-        className="pref-input"
-        value={s.name}
-        maxLength={24}
-        placeholder="輸入一個名字"
-        onChange={(e) => actions.setName(e.target.value)}
-      />
 
       <button
         className={'pref-row' + (open === 'feedback' ? ' open' : '')}
@@ -165,53 +139,6 @@ export function Settings({
         </div>
       )}
 
-      <button
-        className={'pref-row' + (open === 'identity' ? ' open' : '')}
-        onClick={() => toggleSection('identity')}
-      >
-        <span className="pref-label">身份</span>
-        <ChevronIcon size={20} className="pref-arrow" />
-      </button>
-      {open === 'identity' && (
-        <div className="pref-body">
-          <ul className="line-list">
-            {visibleIdentities(s.identities).map((i) => (
-              <li key={i.id} className={i.id === s.currentIdentityId ? 'current' : ''}>
-                <span className="grow">{displayName(i)}</span>
-                <span className="mono small">
-                  lv.{levelInfo(i.exp).level} · {i.stages.length} 階 · {allImageIds(i).length} 圖
-                </span>
-                <button className="icon-btn small" aria-label="編輯身份" onClick={() => onEditIdentity(i.id)}>
-                  <PencilIcon size={16} />
-                </button>
-              </li>
-            ))}
-          </ul>
-          <div className="add-row">
-            <input
-              className="text-input inline"
-              placeholder={`自訂身份，最多 ${MAX_IDENTITIES} 種`}
-              value={newIdentity}
-              maxLength={20}
-              onChange={(e) => setNewIdentity(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') addIdentity()
-              }}
-            />
-            <button
-              className="icon-btn"
-              aria-label="新增身份"
-              disabled={!newIdentity.trim() || s.identities.length >= MAX_IDENTITIES}
-              onClick={addIdentity}
-            >
-              <PlusIcon />
-            </button>
-          </div>
-          {s.identities.length >= MAX_IDENTITIES && (
-            <p className="help">已經有 {MAX_IDENTITIES} 種身份了，要新增請先刪掉一個。</p>
-          )}
-        </div>
-      )}
 
       <button className="pref-row" onClick={onTutorial}>
         <span className="pref-label">重看使用教學</span>

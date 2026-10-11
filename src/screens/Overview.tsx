@@ -1,30 +1,14 @@
 import type { Category, Task } from '../types'
 import { actions, useStore } from '../store'
-import { CATEGORY_LABEL, dayKey, streakFrom, weekKey } from '../level'
+import { CATEGORY_LABEL } from '../level'
 import { displayName } from '../stage'
-import { ACHIEVEMENTS } from '../achievements'
-import { Badge } from '../components/Badge'
-import { FlameIcon, PencilIcon, PlusIcon, TrashIcon } from '../Icons'
+import { PencilIcon, PlusIcon, TrashIcon } from '../Icons'
 
 const CATS: Category[] = ['daily', 'weekly', 'achievement']
 
-export function Overview({
-  onEdit,
-  onAdd,
-  onBadges,
-}: {
-  onEdit: (t: Task) => void
-  onAdd: (c: Category) => void
-  onBadges: () => void
-}) {
+/** 左上角：任務總覽，單純的任務主控台（新增、編輯、刪除）。統計與徽章在笑臉的「使用者資訊」 */
+export function Overview({ onEdit, onAdd }: { onEdit: (t: Task) => void; onAdd: (c: Category) => void }) {
   const s = useStore()
-  const today = dayKey()
-  const week = weekKey()
-  const days = Object.entries(s.stats.dayCounts)
-  const todayCount = s.stats.dayCounts[today] ?? 0
-  const weekCount = days.reduce((a, [k, n]) => a + (weekKey(new Date(k + 'T12:00:00')) === week ? n : 0), 0)
-  const streak = streakFrom(days.map(([k]) => k))
-  const recent = [...s.unlocked].sort((a, b) => b.at - a.at).slice(0, 4)
 
   const nameOf = (id: string | null) =>
     id === null
@@ -38,42 +22,6 @@ export function Overview({
 
   return (
     <div className="screen overview">
-      <div className="streak-card">
-        <FlameIcon size={26} />
-        <span className="streak-num mono">{String(streak).padStart(2, '0')}</span>
-        <span className="streak-label">連續天數</span>
-      </div>
-
-      <div className="stat-row">
-        <div className="stat-box">
-          <span className="mono stat-num">{todayCount}</span>
-          <span className="stat-label">今日完成</span>
-        </div>
-        <div className="stat-box">
-          <span className="mono stat-num">{weekCount}</span>
-          <span className="stat-label">本週完成</span>
-        </div>
-      </div>
-
-      <button className="badge-shelf" onClick={onBadges}>
-        <div className="badge-shelf-row">
-          {recent.length > 0 ? (
-            recent.map((u) => {
-              const a = ACHIEVEMENTS.find((x) => x.id === u.id)
-              return a ? <Badge key={u.id} icon={a.icon} tier={a.tier} size={40} /> : null
-            })
-          ) : (
-            <Badge icon="sword" tier={1} locked size={40} />
-          )}
-        </div>
-        <div className="badge-shelf-text">
-          <span className="badge-shelf-title">徽章櫃</span>
-          <span className="mono small">
-            {s.unlocked.length} / {ACHIEVEMENTS.length} 已解鎖 →
-          </span>
-        </div>
-      </button>
-
       {CATS.map((c) => {
         const list = s.tasks.filter((t) => t.category === c && !t.eventDay)
         return (
@@ -118,23 +66,6 @@ export function Overview({
         )
       })}
 
-      {s.logs.length > 0 && (
-        <section className="block">
-          <h2 className="block-title">最近完成</h2>
-          <ul className="log-list mono small">
-            {[...s.logs]
-              .reverse()
-              .slice(0, 12)
-              .map((l) => (
-                <li key={l.id}>
-                  <span>{new Date(l.at).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}</span>
-                  <span className="log-title">{l.title}</span>
-                  <span>+{l.exp}</span>
-                </li>
-              ))}
-          </ul>
-        </section>
-      )}
     </div>
   )
 }

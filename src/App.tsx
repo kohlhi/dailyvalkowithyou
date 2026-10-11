@@ -12,11 +12,12 @@ import { CATEGORY_LABEL, levelInfo, streakFrom } from './level'
 import { displayName } from './stage'
 import { APP } from './appConfig'
 import { sfx } from './sound'
-import { BackIcon, CalendarIcon, GridIcon, SmileyIcon, StarIcon, TrophyIcon } from './Icons'
+import { BackIcon, CalendarIcon, GearIcon, GridIcon, SmileyIcon, StarIcon, TrophyIcon } from './Icons'
 import { HomePages } from './screens/HomePages'
 import { TaskList } from './screens/TaskList'
 import { TaskForm } from './screens/TaskForm'
 import { Settings } from './screens/Settings'
+import { Profile } from './screens/Profile'
 import { Overview } from './screens/Overview'
 import { IdentityEditor } from './screens/IdentityEditor'
 import { EventPool } from './screens/EventPool'
@@ -34,6 +35,7 @@ type Screen =
   | { name: 'tasks'; category: Category }
   | { name: 'form'; category: Category; task?: Task; back: Screen }
   | { name: 'settings' }
+  | { name: 'profile' }
   | { name: 'identity'; id: string }
   | { name: 'events' }
   | { name: 'badges' }
@@ -183,8 +185,8 @@ export default function App() {
   const event = pendingEvent(s)
   const goBack = () => {
     if (screen.name === 'form') go(screen.back)
-    else if (screen.name === 'identity' || screen.name === 'events') go({ name: 'settings' })
-    else if (screen.name === 'badges') go({ name: 'overview' })
+    else if (screen.name === 'identity' || screen.name === 'badges') go({ name: 'profile' })
+    else if (screen.name === 'events') go({ name: 'settings' })
     else go({ name: 'home' })
   }
 
@@ -196,7 +198,11 @@ export default function App() {
     sub = CATEGORY_LABEL[screen.category]
   }
   if (screen.name === 'settings') {
-    title = '使用者偏好'
+    title = '設定'
+    sub = APP.tagline
+  }
+  if (screen.name === 'profile') {
+    title = '使用者資訊'
     sub = s.name
   }
   if (screen.name === 'identity') {
@@ -258,14 +264,25 @@ export default function App() {
           <div className="name">{title}</div>
           <div className="sub mono">{sub}</div>
         </div>
-        <button
-          className="icon-btn smiley"
-          aria-label="使用者偏好"
-          aria-pressed={screen.name === 'settings'}
-          onClick={() => go(screen.name === 'settings' ? { name: 'home' } : { name: 'settings' })}
-        >
-          <SmileyIcon size={36} />
-        </button>
+        {/* 右上角：笑臉是使用者資訊，下面一顆小齒輪是設定。齒輪浮在笑臉下方，不撐高標題列 */}
+        <div className="header-right">
+          <button
+            className="icon-btn smiley"
+            aria-label="使用者資訊"
+            aria-pressed={screen.name === 'profile'}
+            onClick={() => go(screen.name === 'profile' ? { name: 'home' } : { name: 'profile' })}
+          >
+            <SmileyIcon size={36} />
+          </button>
+          <button
+            className="icon-btn small gear"
+            aria-label="設定"
+            aria-pressed={screen.name === 'settings'}
+            onClick={() => go(screen.name === 'settings' ? { name: 'home' } : { name: 'settings' })}
+          >
+            <GearIcon size={20} />
+          </button>
+        </div>
       </header>
 
       <main className="main">
@@ -294,13 +311,15 @@ export default function App() {
           {screen.name === 'settings' && (
             <Settings
               onToast={showToast}
-              onEditIdentity={(id) => go({ name: 'identity', id })}
               onEvents={() => go({ name: 'events' })}
               onTutorial={() => push({ kind: 'tutorial' })}
             />
           )}
+          {screen.name === 'profile' && (
+            <Profile onEditIdentity={(id) => go({ name: 'identity', id })} onBadges={() => go({ name: 'badges' })} />
+          )}
           {screen.name === 'identity' && (
-            <IdentityEditor id={screen.id} onToast={showToast} onDeleted={() => go({ name: 'settings' })} />
+            <IdentityEditor id={screen.id} onToast={showToast} onDeleted={() => go({ name: 'profile' })} />
           )}
           {screen.name === 'events' && <EventPool />}
           {screen.name === 'badges' && <Badges />}
@@ -308,7 +327,6 @@ export default function App() {
             <Overview
               onEdit={(t) => go({ name: 'form', category: t.category, task: t, back: screen })}
               onAdd={(c) => go({ name: 'form', category: c, back: screen })}
-              onBadges={() => go({ name: 'badges' })}
             />
           )}
         </div>
