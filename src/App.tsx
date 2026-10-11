@@ -226,6 +226,7 @@ export default function App() {
         {
           '--scene-focus': 首頁外觀.裁切位置,
           '--scene-zoom': String(首頁外觀.放大),
+          '--scene-up': String(首頁外觀.上移),
           '--scene-dim-top': String(首頁外觀.上方暗度),
           '--scene-dim-bottom': String(首頁外觀.下方暗度),
           '--valko-size': 首頁外觀.小狼大小 + '%',

@@ -2739,6 +2739,8 @@ button.manage-main {
   /* 整個場景一起放大，中心就是「裁切位置」那一點（object-position 的百分比點剛好對齊容器的同一個百分比點） */
   scale: var(--scene-zoom, 1);
   transform-origin: var(--scene-focus, 50% 36%);
+  /* 整個背景上下挪，由「首頁外觀.上移」決定 */
+  translate: 0 calc(var(--scene-up, 0) * -1px);
 }
 
 /* 圖片用 cover 填滿，寧可裁切也不要留白邊 */
