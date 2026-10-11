@@ -180,9 +180,6 @@ export default function App() {
   // 視差的 --px/--py 寫在 .app，滿版背景與小狼都讀得到同一組
   useParallax(appRef, Boolean(scene) && screen.name === 'home' && s.prefs.animation)
   const isRoot = screen.name === 'home' || screen.name === 'tasks'
-  // 主頁（不是記事本／番茄鐘／陪伴）時，底部是經驗條＋任務按鈕的合併面板
-  const dock = screen.name === 'home' && homePage === 1
-  const meLevel = levelInfo(me.exp)
   const event = pendingEvent(s)
   const goBack = () => {
     if (screen.name === 'form') go(screen.back)
@@ -222,7 +219,7 @@ export default function App() {
 
   return (
     <div
-      className={'app' + (screen.name === 'home' ? ' at-home' : '')}
+      className="app"
       ref={appRef}
       // 首頁外觀的設定（內容.ts）變成 CSS 變數，樣式表直接讀
       style={
@@ -316,26 +313,7 @@ export default function App() {
       </main>
 
       {isRoot && (
-        <nav className={'tabbar' + (dock ? ' dock' : '')}>
-          {/* 主頁時把經驗條收進同一塊面板，和三個任務按鈕一起，整頁不用往下滑 */}
-          {dock && (
-            <div
-              className="dock-exp"
-              role="progressbar"
-              aria-valuenow={me.exp}
-              aria-valuemin={meLevel.start}
-              aria-valuemax={meLevel.next}
-            >
-              <span className="dock-lv mono">lv.{meLevel.level}</span>
-              <span className="dock-bar">
-                <i style={{ width: `${Math.max(2, Math.round(meLevel.ratio * 100))}%` }} />
-              </span>
-              <span className="dock-num mono">
-                {me.exp - meLevel.start}/{meLevel.next - meLevel.start}
-              </span>
-            </div>
-          )}
-          <div className="tabbar-row">
+        <nav className="tabbar">
           {TABS.map(({ category, Icon, label }) => {
             const active = screen.name === 'tasks' && screen.category === category
             return (
@@ -346,11 +324,10 @@ export default function App() {
                 aria-pressed={active}
                 onClick={() => go(active ? { name: 'home' } : { name: 'tasks', category })}
               >
-                <Icon size={dock ? 26 : 30} />
+                <Icon size={30} />
               </button>
             )
           })}
-          </div>
         </nav>
       )}
 

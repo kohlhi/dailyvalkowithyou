@@ -101,11 +101,6 @@ CSS mask。雨在 `components/Scene.tsx`，看不到（滑到別頁、App 在背
 **要新增可調的項目就照這個模式加，不要再把數字寫死回 `styles.css`** —— 那裡有三千多行，
 使用者找不到，而且同一個選擇器可能被定義兩次（`.valko` 以前就是，已經合併）。
 
-**首頁一頁放得下、不用往下滑**：主頁時 `.app.at-home` 固定 100dvh、`overflow: hidden`，
-經驗條收進底部分頁列變成 `.tabbar.dock`（經驗條＋三個任務按鈕一塊面板），稱號底下不再另放經驗條。
-首頁各層（`.screen-anim`、`.home-pages`、`.home-track`）要 `min-height: 0`，否則會被最高的那頁撐開壓到面板；
-記事本／番茄鐘／陪伴太高時在自己的 `.home-page` 裡捲。任務清單等其他畫面不受影響，照常整頁捲動。
-
 **首頁背景是滿版的，畫在 `App.tsx` 不在 `Home.tsx`**：`.scene-bg` 是 `position: fixed` 鋪滿整個視窗，
 壓在 header 與分頁列後面，所以必須掛在 `.app` 底下 —— 放進 `.main` 的話會蓋到 header。
 `.scene-bg::after` 是下方的漸層，讓稱號、經驗條、分頁圖示讀得到。

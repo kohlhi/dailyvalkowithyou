@@ -87,9 +87,18 @@ export function Home({
           }}
         >
           <span className="class-name">{displayName(me)}</span>
-          {/* 有背景時等級與經驗條在底部面板；沒背景（自建身份）時留在這裡 */}
-          {!scene && <span className="level mono">lv.{info.level}</span>}
+          <span className="level mono">
+            lv.{info.level} <span className="level-exp">({me.exp} EXP)</span>
+          </span>
         </button>
+      </div>
+
+      <div className="bar" role="progressbar" aria-valuenow={me.exp} aria-valuemin={info.start} aria-valuemax={info.next}>
+        <div className="bar-fill" style={{ width: `${Math.max(2, Math.round(info.ratio * 100))}%` }} />
+      </div>
+      <div className="bar-labels mono">
+        <span>{info.start} EXP</span>
+        <span>{info.next} EXP</span>
       </div>
 
       {event && (
