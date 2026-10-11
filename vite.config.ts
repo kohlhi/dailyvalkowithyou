@@ -29,8 +29,8 @@ export default defineConfig({
         description: APP.description,
         lang: 'zh-Hant',
         // 跟背景漸層最上面的顏色一樣，開啟畫面與狀態列才不會閃一塊米白色
-        theme_color: '#1b2c2f',
-        background_color: '#1b2c2f',
+        theme_color: '#0e2537',
+        background_color: '#0e2537',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',

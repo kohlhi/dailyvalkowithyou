@@ -1,8 +1,20 @@
 :root {
   /* 深色主題，背景三色漸層由上到下 */
-  --grad-top: #1b2c2f;
-  --grad-mid: #2a445d;
-  --grad-bottom: #4a767a;
+  /* 各頁背景：跟首頁壓在 UI 下的漸層同一套顏色（設計稿 Asset 1.svg），
+     上面是深藍，離底部 153px 開始漸變到底部的藍綠，iPhone 底部安全區另外加上去 */
+  --grad-top: #0e2537;
+  --grad-mid: #0e2537;
+  --grad-bottom: #055568;
+  --page-gradient: linear-gradient(
+    0deg,
+    #055568 0,
+    #055568 calc(2px + env(safe-area-inset-bottom, 0px)),
+    #093f52 calc(32px + env(safe-area-inset-bottom, 0px)),
+    #0b3043 calc(67px + env(safe-area-inset-bottom, 0px)),
+    #0d2739 calc(102px + env(safe-area-inset-bottom, 0px)),
+    #0e2537 calc(153px + env(safe-area-inset-bottom, 0px)),
+    #0e2537 100%
+  );
   /* 實心的深底色，用在「亮底深字」與圖示挖空 */
   --paper: #1b2c2f;
   /* 浮出的深色面板，壓在漸層任何一段上都讀得出來 */
@@ -3281,14 +3293,7 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    var(--grad-top) 0%,
-    #21353f 22%,
-    var(--grad-mid) 48%,
-    #375c6c 76%,
-    var(--grad-bottom) 100%
-  );
+  background: var(--page-gradient);
 }
 
 /* 全螢幕特效自己就是滿版，直接畫同一道漸層 */
@@ -3297,14 +3302,7 @@ body::before {
 .evolve,
 .badge-pop,
 .tutorial {
-  background: linear-gradient(
-    180deg,
-    var(--grad-top) 0%,
-    #21353f 22%,
-    var(--grad-mid) 48%,
-    #375c6c 76%,
-    var(--grad-bottom) 100%
-  );
+  background: var(--page-gradient);
 }
 
 /* ---------- 任務總覽：連續天數大白卡 + 兩顆統計 ---------- */
