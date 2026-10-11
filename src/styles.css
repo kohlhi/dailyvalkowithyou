@@ -3949,3 +3949,15 @@ body::before {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* 滑到記事本／番茄鐘／陪伴時任務按鈕淡出。只能隱形不能拿掉，高度要維持，否則滑到一半整頁對齊會被打斷 */
+.tabbar {
+  transition: opacity 0.2s ease;
+}
+
+.tabbar.away {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}

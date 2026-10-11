@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Home } from './Home'
 import { Pomodoro } from './Pomodoro'
 import { Lofi } from './Lofi'
@@ -37,13 +37,47 @@ export function HomePages({
     if (el) el.scrollLeft = 主頁 * el.clientWidth
   }, [])
 
+  const 對齊計時 = useRef(0)
+  const 手指按著 = useRef(false)
+
+  /** 停在兩頁中間的話，滑到最近的那一頁（iPhone 的整頁對齊偶爾會被打斷） */
+  const 對齊 = () => {
+    const el = 軌道.current
+    if (!el || el.clientWidth === 0 || 手指按著.current) return
+    const i = Math.round(el.scrollLeft / el.clientWidth)
+    if (Math.abs(el.scrollLeft - i * el.clientWidth) > 1) {
+      el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' })
+    }
+  }
+  const 稍後對齊 = () => {
+    window.clearTimeout(對齊計時.current)
+    對齊計時.current = window.setTimeout(對齊, 160)
+  }
+
   const 捲動時 = () => {
     const el = 軌道.current
     if (!el || el.clientWidth === 0) return
     const i = Math.max(0, Math.min(頁籤.length - 1, Math.round(el.scrollLeft / el.clientWidth)))
     setPage(i)
     onPage(i)
+    稍後對齊()
   }
+
+  // 寬度變了（轉向、視窗縮放）就重新對準目前這一頁，不然會卡在半頁
+  const 目前頁 = useRef(page)
+  目前頁.current = page
+  useEffect(() => {
+    const el = 軌道.current
+    if (!el) return
+    const ro = new ResizeObserver(() => {
+      el.scrollLeft = 目前頁.current * el.clientWidth
+    })
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      window.clearTimeout(對齊計時.current)
+    }
+  }, [])
 
   const 跳到 = (i: number) => {
     const el = 軌道.current
@@ -54,7 +88,22 @@ export function HomePages({
 
   return (
     <div className="home-pages">
-      <div className="home-track" ref={軌道} onScroll={捲動時}>
+      <div
+        className="home-track"
+        ref={軌道}
+        onScroll={捲動時}
+        onTouchStart={() => {
+          手指按著.current = true
+        }}
+        onTouchEnd={() => {
+          手指按著.current = false
+          稍後對齊()
+        }}
+        onTouchCancel={() => {
+          手指按著.current = false
+          稍後對齊()
+        }}
+      >
         <div className="home-page">
           <Notes />
         </div>

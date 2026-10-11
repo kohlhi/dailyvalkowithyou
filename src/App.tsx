@@ -312,9 +312,10 @@ export default function App() {
         </div>
       </main>
 
-      {/* 記事本、番茄鐘、陪伴頁不顯示任務按鈕，留給那幾頁更多空間 */}
-      {isRoot && !(screen.name === 'home' && homePage !== 1) && (
-        <nav className="tabbar">
+      {/* 記事本、番茄鐘、陪伴頁把任務按鈕藏起來。只能隱形、不能拿掉：
+          滑到一半高度一變，iPhone 的整頁對齊會被打斷，停在兩頁中間 */}
+      {isRoot && (
+        <nav className={'tabbar' + (screen.name === 'home' && homePage !== 1 ? ' away' : '')} aria-hidden={screen.name === 'home' && homePage !== 1}>
           {TABS.map(({ category, Icon, label }) => {
             const active = screen.name === 'tasks' && screen.category === category
             return (
