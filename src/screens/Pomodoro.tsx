@@ -14,15 +14,25 @@ import { 通知, 通知狀態, 要求許可 } from '../notify'
 import type { 通知狀態 as 通知狀態型 } from '../notify'
 import { 清單角色圖 } from '../內容'
 import { useStore } from '../store'
+import { inherited } from '../stage'
+import { useImageUrl } from '../images'
 
-const 圓周 = 2 * Math.PI * 118
 
 export function Pomodoro() {
   const f = useFocus()
   const s = useStore()
+  const me = s.identities.find((i) => i.id === s.currentIdentityId) ?? s.identities[0]
+  const 小狼 = useImageUrl(inherited(me, 'images')[0] ?? null)
   // 每 250ms 重畫一次。真正的時間來源是 f.endsAt，這裡只是讓畫面跟上。
   const [, 重畫] = useReducer((n: number) => n + 1, 0)
   const [許可, 設許可] = useState<通知狀態型>(() => 通知狀態())
+  // 專注中按一下黃色方塊會先變成「確定？」，三秒內再按才真的放棄
+  const [確認, 設確認] = useState(false)
+  useEffect(() => {
+    if (!確認) return
+    const id = setTimeout(() => 設確認(false), 3000)
+    return () => clearTimeout(id)
+  }, [確認])
 
   useEffect(() => {
     const 檢查 = () => {
@@ -52,7 +62,6 @@ export function Pomodoro() {
   const 走完 = f.phase === 'idle' ? 0 : 1 - 剩 / 總長
   const 輪數 = 今日輪數(f)
   const 顯示 = f.phase === 'idle' ? 格式(f.focusMin * 60_000) : 格式(剩)
-  const [分, 秒] = 顯示.split(':')
   const 跑著 = f.phase !== 'idle'
 
   const 開始 = () => {
@@ -62,73 +71,59 @@ export function Pomodoro() {
     開始守著()
     focus.開始專注()
   }
+  const 結束 = () => {
+    sfx.tap()
+    設確認(false)
+    focus.停止()
+    收工()
+  }
+
+  /** 黃色方塊：閒置是開始；專注中按兩下才放棄（免得手滑）；休息中是收工 */
+  const 按方塊 = () => {
+    if (f.phase === 'idle') return 開始()
+    if (f.phase === 'break') return 結束()
+    if (確認) return 結束()
+    sfx.tap()
+    設確認(true)
+  }
 
   return (
     <div className="focus-page">
-      {/* 儀表盤：外圈刻度在計時時會轉，左邊是倒數，中間橘紅色的圓是開始按鈕 */}
-      <div className={'dial' + (跑著 && s.prefs.animation ? ' running' : '') + (f.phase === 'break' ? ' rest' : '')}>
-        <svg className="dial-svg" viewBox="0 0 340 340" aria-hidden="true">
-          <circle className="dial-face" cx="170" cy="170" r="164" />
-          {/* 最外圈：長短不一的弧線與幾塊粗黑條，順時針慢轉 */}
-          <g className="dial-spin cw">
-            <circle className="dial-arc thin" cx="170" cy="170" r="154" strokeDasharray="70 16 10 34 120 22 6 40 90 18 30 60 14 50 140 30" />
-            <circle className="dial-arc bold" cx="170" cy="170" r="154" strokeDasharray="30 260 16 330 22 297" />
-          </g>
-          {/* 第二圈：細刻度，逆時針轉 */}
-          <g className="dial-spin ccw">
-            <circle className="dial-ticks" cx="170" cy="170" r="136" strokeDasharray="1.2 6" />
-            <circle className="dial-ticks long" cx="170" cy="170" r="136" strokeDasharray="1.6 69.6" />
-          </g>
-          {/* 進度：走完多少，從正上方開始 */}
-          <circle className="dial-track" cx="170" cy="170" r="118" />
-          <circle
-            className="dial-progress"
-            cx="170"
-            cy="170"
-            r="118"
-            strokeDasharray={圓周}
-            strokeDashoffset={圓周 * (1 - 走完)}
-          />
-          {/* 內圈虛線，順時針轉得比較快 */}
-          <g className="dial-spin cw fast">
-            <circle className="dial-arc dash" cx="170" cy="170" r="100" strokeDasharray="3 7" />
-          </g>
-          <text className="dial-label" x="170" y="34" textAnchor="middle">
-            FOCUS {f.focusMin} · BREAK {f.breakMin}
-          </text>
-          <text className="dial-label" x="170" y="318" textAnchor="middle">
-            ROUND {String(輪數).padStart(2, '0')}
-          </text>
-        </svg>
-
-        <div className="dial-count">
-          <span className="dial-min">{分}</span>
-          <span className="dial-sec mono">{秒} 秒</span>
-          <span className="dial-sub mono">{f.phase === 'focus' ? '專注中' : f.phase === 'break' ? '休息中' : '準備好了嗎'}</span>
+      {/* 唱片盒：唱片在下面轉（計時中），上半部的紙卡包裝上放全部的控制 */}
+      <div className={'cd-case' + (跑著 && s.prefs.animation ? ' running' : '') + (f.phase === 'break' ? ' rest' : '')}>
+        <div className="cd-disc" aria-hidden="true">
+          <div className="cd-disc-art" />
+          <span className="cd-arc a" />
+          <span className="cd-arc b" />
+          <span className="cd-hub" />
         </div>
 
-        {f.phase === 'idle' ? (
-          <button className="dial-core" onClick={開始}>
-            <span>開始</span>
-            <span>專注</span>
-          </button>
-        ) : (
-          <div className="dial-core busy" aria-live="polite">
-            <span className="mono">{Math.floor(走完 * 100)}%</span>
-            <small>{f.phase === 'focus' ? '專注中' : '休息一下'}</small>
-          </div>
-        )}
-      </div>
+        <span className="cd-mark l" aria-hidden="true" />
+        <span className="cd-mark r" aria-hidden="true" />
+        <span className="cd-side mono" aria-hidden="true">
+          VALKO · STAY WITH ME · ROUND {String(輪數).padStart(2, '0')}
+        </span>
 
-      {f.phase === 'idle' && (
-        <>
-          <div className="focus-pick">
-            <span className="focus-pick-label">專注</span>
-            <div className="focus-opts">
+        <div className="cd-band">
+          <div className="cd-barcode" aria-hidden="true">
+            <i />
+            <span className="mono">0705 {String(f.focusMin).padStart(2, '0')}{String(f.breakMin).padStart(2, '0')} 2026</span>
+          </div>
+          <span className="cd-round mono">MS - {String(輪數).padStart(2, '0')}</span>
+
+          <div className="cd-left">
+            <span className="cd-title">VALKO — {f.phase === 'focus' ? 'FOCUS' : f.phase === 'break' ? 'BREAK' : 'READY'}</span>
+            <span className="cd-count" aria-live="off">
+              {顯示}
+            </span>
+
+            <div className="cd-pick">
+              <span className="cd-pick-label mono">專注</span>
               {專注長度選項.map((m) => (
                 <button
                   key={m}
-                  className={'focus-opt mono' + (f.focusMin === m ? ' on' : '')}
+                  className={'cd-opt mono' + (f.focusMin === m ? ' on' : '')}
+                  disabled={跑著}
                   onClick={() => {
                     sfx.tap()
                     focus.設定長度(m, f.breakMin)
@@ -138,15 +133,13 @@ export function Pomodoro() {
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="focus-pick">
-            <span className="focus-pick-label">休息</span>
-            <div className="focus-opts">
+            <div className="cd-pick">
+              <span className="cd-pick-label mono">休息</span>
               {休息長度選項.map((m) => (
                 <button
                   key={m}
-                  className={'focus-opt mono' + (f.breakMin === m ? ' on' : '')}
+                  className={'cd-opt mono' + (f.breakMin === m ? ' on' : '')}
+                  disabled={跑著}
                   onClick={() => {
                     sfx.tap()
                     focus.設定長度(f.focusMin, m)
@@ -156,64 +149,47 @@ export function Pomodoro() {
                 </button>
               ))}
             </div>
+
+            {許可 !== '不支援' && (
+              <button
+                className={'cd-notify mono' + (許可 === '已允許' ? ' on' : '')}
+                disabled={許可 !== '可以問'}
+                onClick={() => {
+                  sfx.tap()
+                  void 要求許可().then(設許可)
+                }}
+              >
+                <span className="cd-check" aria-hidden="true" />
+                {許可 === '已允許' ? '時間到會跳出橫幅' : 許可 === '被拒絕' ? '橫幅被關掉了，去手機設定開' : '時間到跳出橫幅通知我'}
+              </button>
+            )}
           </div>
 
-          {許可 !== '不支援' && (
-            <button
-              className={'focus-notify' + (許可 === '已允許' ? ' on' : '')}
-              disabled={許可 !== '可以問'}
-              onClick={() => {
-                sfx.tap()
-                void 要求許可().then(設許可)
-              }}
-            >
-              {許可 === '已允許'
-                ? '時間到會跳出橫幅 ✓'
-                : 許可 === '被拒絕'
-                  ? '橫幅被關掉了，要去手機設定裡開'
-                  : '時間到時也跳出橫幅通知我'}
-            </button>
-          )}
-        </>
-      )}
+          <div className="cd-right">
+            <img className="cd-print" src={小狼 ?? 清單角色圖} alt="" />
+            <p className="cd-fine mono">
+              {f.phase === 'focus'
+                ? '專注中。我在旁邊陪你，別分心，時間到我會叫你。'
+                : f.phase === 'break'
+                  ? '休息一下。起來走一走、喝口水，回來再說。'
+                  : 輪數 > 0
+                    ? `今天已經專注 ${輪數} 輪了。挑好長度，按黃色方塊再來一輪。`
+                    : '挑好專注和休息的長度，按黃色方塊開始，唱片就會轉起來。'}
+            </p>
+          </div>
 
-      {f.phase === 'focus' && (
-        <button
-          className="ghost"
-          onClick={() => {
-            sfx.tap()
-            focus.停止()
-            收工()
-          }}
-        >
-          放棄這一輪
-        </button>
-      )}
+          <button className={'cd-go' + (確認 ? ' armed' : '')} onClick={按方塊}>
+            <span className="cd-go-icon" aria-hidden="true">
+              {f.phase === 'idle' ? '▶' : f.phase === 'break' ? '✓' : '✕'}
+            </span>
+            <span className="cd-go-label">
+              {f.phase === 'idle' ? '開始' : f.phase === 'break' ? '收工' : 確認 ? '確定？' : '放棄'}
+            </span>
+          </button>
 
-      {f.phase === 'break' && (
-        <button
-          className="pill"
-          onClick={() => {
-            sfx.tap()
-            focus.停止()
-            收工()
-          }}
-        >
-          休息夠了，收工
-        </button>
-      )}
-
-      <div className="focus-foot">
-        <img className="focus-hero" src={清單角色圖} alt="" />
-        <p className="foot-say">
-          {f.phase === 'focus'
-            ? '我在旁邊陪你，別分心'
-            : f.phase === 'break'
-              ? '起來走一走，喝口水'
-              : 輪數 > 0
-                ? `今天已經專注 ${輪數} 輪了，很可以`
-                : '點中間的圓開始，我陪你坐著'}
-        </p>
+          {/* 包裝下緣的進度：走完多少 */}
+          <span className="cd-progress" style={{ width: `${Math.round(走完 * 100)}%` }} aria-hidden="true" />
+        </div>
       </div>
     </div>
   )

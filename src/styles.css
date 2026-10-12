@@ -3510,248 +3510,380 @@ body::before {
   text-align: center;
 }
 
-/* 儀表盤：米白圓盤＋外圈刻度（計時時會轉）＋左側倒數＋中間橘紅色的開始按鈕。
-   參考圖是白底 HUD，這裡換成 App 的主色：米白盤面、深藍刻度、橘紅核心 */
-.dial {
+/* ---------- 番茄鐘：唱片盒 ----------
+   透明壓克力盒裡一張唱片（表面是流體畫，計時中會轉），上半部是紙卡包裝，所有控制都印在包裝上。
+   唱片與裝飾在盒子裡，包裝壓在唱片上面 */
+.cd-case {
   position: relative;
-  width: min(100%, 340px);
+  width: min(100%, 360px);
   aspect-ratio: 1;
   flex: none;
+  overflow: hidden;
+  border-radius: 6px;
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02) 38%, rgba(255, 255, 255, 0) 62%, rgba(255, 255, 255, 0.08)),
+    rgba(6, 14, 20, 0.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+    inset 0 0 0 7px rgba(255, 255, 255, 0.05),
+    inset 0 0 0 8px rgba(255, 255, 255, 0.16),
+    0 22px 44px rgba(0, 0, 0, 0.55);
 }
 
-.dial-svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+/* 壓克力的反光與盒子下半部托盤的那一道階梯線 */
+.cd-case::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background:
+    linear-gradient(0deg, transparent calc(30% - 1px), rgba(255, 255, 255, 0.28) 30%, transparent calc(30% + 1px)),
+    linear-gradient(115deg, transparent 52%, rgba(255, 255, 255, 0.10) 56%, transparent 63%);
 }
 
-.dial-face {
-  fill: var(--sheet);
-  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.45));
-}
-
-.dial-arc,
-.dial-ticks,
-.dial-track,
-.dial-progress {
-  fill: none;
-}
-
-.dial-arc.thin {
-  stroke: var(--on-sheet);
-  stroke-width: 1.6;
-  opacity: 0.75;
-}
-
-.dial-arc.bold {
-  stroke: var(--on-sheet);
-  stroke-width: 9;
-}
-
-.dial-arc.dash {
-  stroke: var(--on-sheet);
-  stroke-width: 1.4;
-  opacity: 0.4;
-}
-
-.dial-ticks {
-  stroke: var(--on-sheet);
-  stroke-width: 7;
-  opacity: 0.35;
-}
-
-.dial-ticks.long {
-  stroke-width: 14;
-  opacity: 0.7;
-}
-
-.dial-track {
-  stroke: var(--on-sheet);
-  stroke-width: 3;
-  opacity: 0.12;
-}
-
-.dial-progress {
-  stroke: #e25b3c;
-  stroke-width: 6;
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-box: view-box;
-  transform-origin: 50% 50%;
-  transition: stroke-dashoffset 0.25s linear;
-}
-
-.dial.rest .dial-progress {
-  stroke: #0b6f84;
-}
-
-.dial-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  fill: var(--on-sheet);
-  opacity: 0.6;
-}
-
-/* 外圈的轉盤：平常停著，計時中才轉 */
-.dial-spin {
-  transform-box: view-box;
-  transform-origin: 50% 50%;
-  animation: dial-spin 48s linear infinite;
+/* 唱片：整張一起轉，表面的印刷（弧線）跟著轉 */
+.cd-disc {
+  position: absolute;
+  left: 5%;
+  top: 13%;
+  width: 90%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.25),
+    0 10px 26px rgba(0, 0, 0, 0.6);
+  animation: cd-spin 5s linear infinite;
   animation-play-state: paused;
 }
 
-.dial-spin.ccw {
-  animation-duration: 70s;
-  animation-direction: reverse;
-}
-
-.dial-spin.fast {
-  animation-duration: 22s;
-}
-
-.dial.running .dial-spin {
+.cd-case.running .cd-disc {
   animation-play-state: running;
 }
 
-@keyframes dial-spin {
+/* 休息時轉得慢一點 */
+.cd-case.rest .cd-disc {
+  animation-duration: 14s;
+}
+
+@keyframes cd-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dial.running .dial-spin {
+  .cd-case.running .cd-disc {
     animation-play-state: paused;
   }
 }
 
-/* 左側倒數：大大的分鐘，下面黑底小標籤是秒數 */
-.dial-count {
+.cd-disc-art {
   position: absolute;
-  z-index: 2;
-  left: 7%;
-  top: 50%;
-  translate: 0 -54%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  color: var(--on-sheet);
-  pointer-events: none;
+  inset: 0;
+  background: url('/scenes/focus/disc.webp') center / cover;
 }
 
-.dial-min {
-  font-size: clamp(40px, 14vw, 56px);
-  font-weight: 700;
-  line-height: 0.9;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
+/* 唱片上印的粗黑弧線 */
+.cd-arc {
+  position: absolute;
+  border-radius: 50%;
+  border: 7px solid transparent;
 }
 
-.dial-sec {
-  background: var(--on-sheet);
-  color: var(--sheet);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 3px 9px 3px 7px;
-  border-radius: 3px 10px 10px 3px;
-  font-variant-numeric: tabular-nums;
+.cd-arc.a {
+  inset: 5%;
+  border-top-color: rgba(10, 10, 12, 0.9);
+  rotate: -28deg;
 }
 
-.dial-sub {
-  font-size: 11px;
-  opacity: 0.7;
+.cd-arc.b {
+  inset: 9%;
+  border-width: 5px;
+  border-bottom-color: rgba(10, 10, 12, 0.85);
+  rotate: 24deg;
 }
 
-/* 中間橘紅色的圓：閒置時是開始按鈕，計時中顯示進度 */
-.dial-core {
+/* 中心孔：透明塑膠圈＋深色孔 */
+.cd-hub {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 38%;
+  width: 34%;
   aspect-ratio: 1;
   translate: -50% -50%;
   border-radius: 50%;
-  border: 0;
+  background: radial-gradient(
+    circle,
+    #070c10 0 30%,
+    #26343d 31% 40%,
+    rgba(210, 220, 226, 0.5) 41% 47%,
+    rgba(120, 135, 145, 0.35) 48% 64%,
+    rgba(230, 236, 240, 0.25) 65% 70%,
+    transparent 71%
+  );
+}
+
+/* 盒子下方兩角的小符號與側邊的直排小字 */
+.cd-mark {
+  position: absolute;
+  bottom: 4.5%;
+  z-index: 2;
+  width: 30px;
+  height: 18px;
+  border: 1.5px solid rgba(247, 242, 232, 0.85);
+  border-radius: 50%;
+}
+
+.cd-mark::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: rgba(247, 242, 232, 0.85);
+}
+
+.cd-mark.l {
+  left: 4.5%;
+}
+
+.cd-mark.r {
+  right: 4.5%;
+}
+
+.cd-side {
+  position: absolute;
+  left: 7.5%;
+  bottom: 14%;
+  z-index: 2;
+  rotate: -90deg;
+  transform-origin: left bottom;
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  white-space: nowrap;
+  color: rgba(247, 242, 232, 0.8);
+}
+
+/* 包裝：米白紙卡橫跨上半部，控制全部在這裡 */
+.cd-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 7%;
+  height: 52%;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 57% 1fr;
+  grid-template-rows: auto 1fr;
+  column-gap: 10px;
+  padding: 9px 12px 12px;
+  background: var(--sheet);
+  color: var(--on-sheet);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.cd-barcode {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cd-barcode i {
+  display: block;
+  width: 70px;
+  height: 14px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--on-sheet) 0 1px,
+    transparent 1px 3px,
+    var(--on-sheet) 3px 5px,
+    transparent 5px 6px,
+    var(--on-sheet) 6px 7px,
+    transparent 7px 10px,
+    var(--on-sheet) 10px 13px,
+    transparent 13px 14px
+  );
+}
+
+.cd-barcode span {
+  font-size: 7px;
+  letter-spacing: 0.08em;
+}
+
+.cd-round {
+  justify-self: end;
+  align-self: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.cd-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.cd-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.cd-count {
+  font-size: clamp(42px, 14.5vw, 58px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  margin: 1px 0 4px -2px;
+}
+
+.cd-pick {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+}
+
+.cd-pick-label {
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 22px;
+}
+
+.cd-opt {
+  min-width: 22px;
+  height: 18px;
+  padding: 0 3px;
+  border: 1px solid var(--on-sheet);
+  border-radius: 2px;
+  background: none;
+  color: var(--on-sheet);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.cd-opt.on {
+  background: var(--on-sheet);
+  color: var(--sheet);
+}
+
+.cd-opt:disabled:not(.on) {
+  opacity: 0.35;
+}
+
+.cd-notify {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
   padding: 0;
+  border: 0;
+  background: none;
+  color: var(--on-sheet);
+  font-size: 8.5px;
+  text-align: left;
+}
+
+.cd-notify:disabled {
+  opacity: 0.7;
+}
+
+.cd-check {
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--on-sheet);
+  flex: none;
+}
+
+.cd-notify.on .cd-check {
+  background: var(--on-sheet);
+}
+
+.cd-right {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+/* 小狼印成黑白，像包裝上的照片 */
+.cd-print {
+  width: 100%;
+  height: 58%;
+  object-fit: contain;
+  object-position: 60% 50%;
+  filter: grayscale(1) contrast(1.7) brightness(1.08);
+  mix-blend-mode: multiply;
+}
+
+.cd-fine {
+  margin: 5px 0 0;
+  font-size: 7px;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+
+/* 黃色方塊：開始／放棄／收工，壓在小狼印刷的左下角 */
+.cd-go {
+  position: absolute;
+  left: calc(57% + 2px);
+  top: 31%;
+  width: 58px;
+  height: 58px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  color: #fff8ef;
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  background:
-    radial-gradient(circle at 34% 30%, rgba(255, 236, 205, 0.55), rgba(255, 236, 205, 0) 42%),
-    radial-gradient(circle at 50% 55%, #f08a4b 0%, #e25b3c 58%, #b8402c 100%);
-  box-shadow:
-    0 0 0 7px rgba(226, 91, 60, 0.16),
-    0 10px 22px rgba(120, 30, 20, 0.35);
-  transition: transform 0.12s;
+  gap: 1px;
+  border: 0;
+  border-radius: 2px;
+  background: #f2c53d;
+  color: #111;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
-button.dial-core:active {
-  transform: scale(0.96);
+.cd-go:active {
+  transform: scale(0.95);
 }
 
-.dial-core.busy {
-  font-size: 24px;
-  letter-spacing: 0.04em;
+.cd-go.armed {
+  background: #e25b3c;
+  color: #fff;
 }
 
-.dial-core.busy small {
+.cd-go-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.cd-go-label {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.14em;
-  opacity: 0.85;
+  letter-spacing: 0.12em;
 }
 
-.dial.rest .dial-core {
-  background:
-    radial-gradient(circle at 34% 30%, rgba(220, 245, 248, 0.45), rgba(220, 245, 248, 0) 42%),
-    radial-gradient(circle at 50% 55%, #1b8a9e 0%, #0b6f84 58%, #07495a 100%);
-  box-shadow:
-    0 0 0 7px rgba(11, 111, 132, 0.18),
-    0 10px 22px rgba(0, 30, 40, 0.35);
+/* 包裝下緣一條細細的進度 */
+.cd-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: #e25b3c;
+  transition: width 0.25s linear;
 }
 
-.focus-pick {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.focus-pick-label {
-  font-size: 13px;
-  color: var(--muted);
-  min-width: 28px;
-  text-align: right;
-}
-
-.focus-opts {
-  display: flex;
-  gap: 6px;
-}
-
-.focus-opt {
-  min-width: 46px;
-  padding: 7px 0;
-  font-size: 14px;
-  font-weight: 700;
-  border: 2px solid var(--line);
-  border-radius: 999px;
-  background: none;
-  color: var(--ink);
-}
-
-.focus-opt.on {
-  background: var(--sheet);
-  color: var(--on-sheet);
-  border-color: var(--sheet);
+.cd-case.rest .cd-progress {
+  background: #0b6f84;
 }
 
 .focus-foot {
@@ -4022,26 +4154,6 @@ button.dial-core:active {
 .lofi-page .hint {
   margin-top: 4px;
   text-align: center;
-}
-
-/* 番茄鐘的橫幅通知開關 */
-.focus-notify {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--muted);
-  background: none;
-  border: 2px solid var(--line);
-  border-radius: 999px;
-  padding: 7px 16px;
-}
-
-.focus-notify.on {
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
-.focus-notify:disabled {
-  opacity: 0.6;
 }
 
 /* 陪伴頁的分區標題（音樂／環境音），只有放了自訂音樂才會出現 */
