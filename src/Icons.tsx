@@ -255,3 +255,30 @@ export const GearIcon = ({ size, className }: P) => (
     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
   </svg>
 )
+
+export const PlayIcon = ({ size, className }: P) => (
+  <svg {...base(size, className)} stroke="none">
+    <path d="M8 5.5v13a1 1 0 0 0 1.5.87l11-6.5a1 1 0 0 0 0-1.74l-11-6.5A1 1 0 0 0 8 5.5z" fill="currentColor" />
+  </svg>
+)
+
+export const PauseIcon = ({ size, className }: P) => (
+  <svg {...base(size, className)} stroke="none">
+    <rect x="6.5" y="5" width="4" height="14" rx="1.4" fill="currentColor" />
+    <rect x="13.5" y="5" width="4" height="14" rx="1.4" fill="currentColor" />
+  </svg>
+)
+
+export const PrevIcon = ({ size, className }: P) => (
+  <svg {...base(size, className)} stroke="none">
+    <path d="M12 6.5v11a.8.8 0 0 1-1.25.66L3.5 13a1.2 1.2 0 0 1 0-2l7.25-5.16A.8.8 0 0 1 12 6.5z" fill="currentColor" />
+    <path d="M21 6.5v11a.8.8 0 0 1-1.25.66L12.5 13a1.2 1.2 0 0 1 0-2l7.25-5.16A.8.8 0 0 1 21 6.5z" fill="currentColor" />
+  </svg>
+)
+
+export const NextIcon = ({ size, className }: P) => (
+  <svg {...base(size, className)} stroke="none">
+    <path d="M3 6.5v11a.8.8 0 0 0 1.25.66L11.5 13a1.2 1.2 0 0 0 0-2L4.25 5.84A.8.8 0 0 0 3 6.5z" fill="currentColor" />
+    <path d="M12 6.5v11a.8.8 0 0 0 1.25.66L20.5 13a1.2 1.2 0 0 0 0-2l-7.25-5.16A.8.8 0 0 0 12 6.5z" fill="currentColor" />
+  </svg>
+)
