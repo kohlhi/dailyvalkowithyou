@@ -4386,6 +4386,14 @@ body::before {
   width: 48px;
   height: 48px;
   color: var(--ink);
+  transition: opacity 0.2s ease;
+}
+
+.header-right .gear.away {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
 

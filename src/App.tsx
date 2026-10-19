@@ -274,9 +274,15 @@ export default function App() {
           >
             <SmileyIcon size={36} />
           </button>
-          {/* 齒輪只在首頁出現；進了設定用左上角返回 */}
+          {/* 齒輪只在首頁的主頁出現；滑到記事本／番茄鐘／陪伴時淡出，進了設定用左上角返回 */}
           {screen.name === 'home' && (
-            <button className="icon-btn gear" aria-label="設定" onClick={() => go({ name: 'settings' })}>
+            <button
+              className={'icon-btn gear' + (homePage !== 1 ? ' away' : '')}
+              aria-label="設定"
+              aria-hidden={homePage !== 1}
+              tabIndex={homePage !== 1 ? -1 : undefined}
+              onClick={() => go({ name: 'settings' })}
+            >
               <GearIcon size={34} />
             </button>
           )}
