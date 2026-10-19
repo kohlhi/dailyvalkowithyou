@@ -274,14 +274,12 @@ export default function App() {
           >
             <SmileyIcon size={36} />
           </button>
-          <button
-            className="icon-btn gear"
-            aria-label="設定"
-            aria-pressed={screen.name === 'settings'}
-            onClick={() => go(screen.name === 'settings' ? { name: 'home' } : { name: 'settings' })}
-          >
-            <GearIcon size={34} />
-          </button>
+          {/* 齒輪只在首頁出現；進了設定用左上角返回 */}
+          {screen.name === 'home' && (
+            <button className="icon-btn gear" aria-label="設定" onClick={() => go({ name: 'settings' })}>
+              <GearIcon size={34} />
+            </button>
+          )}
         </div>
       </header>
 

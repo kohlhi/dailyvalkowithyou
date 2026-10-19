@@ -4388,12 +4388,4 @@ body::before {
   color: var(--ink);
 }
 
-.header-right .gear[aria-pressed='true'] {
-  color: var(--accent);
-}
-
-/* 首頁以外的畫面內容從齒輪下方開始，免得齒輪蓋住任務卡片右邊的按鈕 */
-.app:not(.at-home) > .main {
-  padding-top: 50px;
-}
 
